@@ -1,5 +1,5 @@
 <div align="center">
-# Indestructables
+<h1>Indestructables</h1>
 Indestructables is a privacy-respecting frontend to Instructables
 </div>
 
