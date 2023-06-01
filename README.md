@@ -1,5 +1,7 @@
+<div align="center">
 # Indestructables
 Indestructables is a privacy-respecting frontend to Instructables
+</div>
 
 # Instances
 None, yet!
