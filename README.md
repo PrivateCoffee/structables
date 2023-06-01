@@ -2,6 +2,7 @@
 <img src="static/img/logo.png">
 <h1>Indestructables</h1>
 An open source alternative front-end to Instructables
+<a href="https://matrix.to/#/#indestructables:fedora.im">Matrix</a>
 </div>
 
 # Instances
