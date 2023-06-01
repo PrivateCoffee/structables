@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<h1>{{ data[0] }}</h1>
+
+		<b><a href="/circuits/">Circuits</a></b>
+		<br>
+		{% for ible in data[1] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/workshop/">Workshop</a></b>
+		<br>
+		{% for ible in data[2] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/craft/">Craft</a></b>
+		<br>
+		{% for ible in data[3] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/cooking/">Cooking</a></b>
+		<br>
+		{% for ible in data[4] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/living/">Living</a></b>
+		<br>
+		{% for ible in data[5] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/outside/">Outside</a></b>
+		<br>
+		{% for ible in data[6] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+		<br>
+
+		<b><a href="/teachers/">Teachers</a></b>
+		<br>
+		{% for ible in data[7] %}
+		<div class="ibles">
+			<a href="{{ ible[0] }}">
+				<img style="max-width:19vw;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<h3 style="max-width:19vw;">{{ ible[3] }}</h3>
+			</a>
+			<div class="ible-small">
+				<p>by <a href="{{ ible[5] }}">{{ ible[4] }}</a></p>
+				<p>in <a href="{{ ible[7] }}">{{ ible[6] }}</a></p>
+				<p>{{ ible[8] }} Favorites, {{ ible[9] }} Views</p>
+			</div>
+		</div>
+		{% endfor %}
+
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>

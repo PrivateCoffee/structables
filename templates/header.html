@@ -1,0 +1,26 @@
+<header>
+	<ul
+		style="display:flex;justify-content:flex-start;list-style-type:none;padding-left:0px;align-items:center;flex-wrap:wrap;">
+		<div style="width: 20px; height: 0px"> </div>
+		<li><a href="/"><img style="display:inline" src="{{ url_for('static', filename='img/logo.png') }}"
+					height=75px></a></li>
+		<div style="width: 40px; height: 0px"> </div>
+		<li><a href="/projects/">Projects</a></li>
+		<div style="width: 40px; height: 0px"> </div>
+		<li><a href="/contest/">Contests</a></li>
+		<div style="width: 40px; height: 0px"> </div>
+		<li><a href="/teachers/">Teachers</a></li>
+
+		<div style="width: 60px; height: 0px"> </div>
+
+		<form action="/search" method="GET">
+			<input type="search" placeholder="Search" name="q" maxlength="88" autocapitalize="none" autocorrect="off"
+				autocomplete="off" value="" style="width: 720%; font-size: medium; padding: 3%;">
+		</form>
+
+		<div style="width: 60%; height: 0px"> </div>
+
+		<li><a href="/sitemap/">Sitemap</a></li>
+	</ul>
+	<hr>
+</header>

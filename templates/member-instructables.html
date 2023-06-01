@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{{ data[1] }}'s Instructables - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<img width=150px height=150px style="display:inline-block;" src="{{ data[0] }}" alt="{{ data[1] }}">
+		<h1>{{ data[1] }}</h1>
+		<span>{{ data[2] }}&nbsp;&nbsp;</span>
+		<span>{{ data[3] }}</span>
+		<br>
+		<span>{{ data[4] }} Instructables&nbsp;&nbsp;</span>
+		<span>{{ data[5] }} Views&nbsp;&nbsp;</span>
+		<span>{{ data[6] }} Comments&nbsp;&nbsp;</span>
+		<span>{{ data[7] }} Followers</span>
+		<br>
+		<p>{{ data[8] }}</p>
+		<hr>
+		<h2>Instructables</h2>
+
+		<div style="max-width:90%;">
+			{% for ible in data[9] %}
+			<div class="ible-list-item">
+				<a href="{{ ible[0] }}" style="color:#bbc2cf;">
+					<img style="max-width:350px;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+					<p>{{ ible[2] }}</p>
+					<p>{{ ible[3] }} Views, {{ ible[4] }} Favorites</p>
+				</a>
+			</div>
+			{% endfor %}
+		</div>
+
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>

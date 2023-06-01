@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Contests - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<h1>Contests</h1>
+		{{ data[0]|safe }}
+		<br>
+		<div class="contest-list">
+			{% for contest in data[1] %}
+			<div class="contest-list-item">
+				<a href="{{ contest[0] }}">
+					<img src="{{ contest[1] }}" alt="{{ contest[2] }}" style="max-width:500px;">
+				</a>
+				<p>Closes {{ contest[3] }}</p>
+				<p class="ible-small">{{ contest[4] }} Prizes, {{ contest[5] }} Entries</p>
+			</div>
+			{% endfor %}
+		</div>
+		<div class="closed-contests" id="contest-winners">
+			<h2>Winner's Circle</h2>
+			{% for closed in data[2] %}
+			<div class="closed-contest">
+				<a href="{{ closed[0] }}"><img class="closed-contest-contest" src="{{ closed[1] }}"
+						alt="{{ closed[2] }}"></a>
+				{% for featured_items in closed[3] %}
+				<div class="closed-contest-winner">
+					<a href="{{ featured_items[0] }}">
+						<img class="closed-contest-winner-img" src="{{ featured_items[1] }}"
+							alt="{{ featured_items[2] }}">
+						<br>
+						<b>{{ featured_items[2] }}</b>
+					</a>
+					<p>by <a href="{{ featured_items[4] }}">{{ featured_items[3] }}</a></p>
+				</div>
+				{% endfor %}
+			</div>
+			{% endfor %}
+		</div>
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>

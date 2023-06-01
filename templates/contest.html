@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{{ data[0] }} - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<img src="{{ data[1] }}" alt="{{ data[0] }}" style="max-width:98vw;">
+		<p>{{ data[2] }} Entries, {{ data[3] }} Prizes</p>
+		<br>
+		{{ data[4]|safe }}
+		<div class="ible-list">
+			{% for ible in data[5] %}
+			<div class="ible-list-item">
+				<a href="{{ ible[0] }}" style="color:#bbc2cf;">
+					<img style="max-width:350px;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
+					<p>{{ ible[2] }}</p>
+				</a>
+				<p>by <a href="{{ ible[4] }}">{{ ible[3] }}</a> in <a href="{{ ible[6] }}">{{ ible[5] }}</a></p>
+				<p>{{ ible[7] }} Views</p>
+			</div>
+			{% endfor %}
+		</div>
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Contests Archive, Page {{ data[0] }} - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<h1>Past Contests</h1>
+		<p>{{ data[1] }}</p>
+		<p><a href="/contest/">See running contests</a></p>
+	</center>
+	{% for year in data[3] %}
+	<div class="archive-year">
+		<hr>
+		<h2>{{ year[0] }}</h2>
+		<hr>
+		{% for month in year[1] %}
+		<div class="archive-month-wrapper">
+			<div class="archive-month">
+				<h3>{{ month[0] }}</h3>
+				{% for contest in month[1] %}
+				<div class="archive">
+					<p>{{ contest[0] }}<a href="{{ contest[1] }}">{{ contest[2] }}</a></p>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+		{% endfor %}
+		<br>
+	</div>
+	{% endfor %}
+	<hr>
+	{{ data[2]|safe }}
+	{% include "footer.html" %}
+</body>
+
+</html>

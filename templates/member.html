@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{{ data[1] }}'s Profile - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<img width=150px height=150px style="display:inline-block;" src="{{ data[0] }}" alt="{{ data[1] }}">
+		<h1>{{ data[1] }}</h1>
+		<span>{{ data[2] }}&nbsp;&nbsp;</span>
+		<span>{{ data[3] }}</span>
+		<br>
+		<span>{{ data[4] }} Instructables&nbsp;&nbsp;</span>
+		<span>{{ data[5] }} Views&nbsp;&nbsp;</span>
+		<span>{{ data[6] }} Comments&nbsp;&nbsp;</span>
+		<span>{{ data[7] }} Followers</span>
+		<br>
+		<p>{{ data[8] }}</p>
+		{% if data[9] != "" %}
+		<hr>
+		{% endif %}
+		<h2>{{ data[9] }}</h2>
+		{% for ible in data[10] %}
+		<div class="member-list">
+			<a href="{{ ible[1] }}" style="color:#bbc2cf;">
+				<img style="max-width:200px;" src="{{ ible[2] }}" alt="{{ ible[0] }}">
+				<p>{{ ible[0] }}</p>
+			</a>
+		</div>
+		{% endfor %}
+		<p><a href="/member/{{ data[1] }}/instructables/">View all Instructables</a></p>
+		<br>
+		<h2>{{ data[11] }}</h2>
+		{% for ach in data[12] %}
+		<div class="member-list">
+			<p><b>{{ ach[0] }}</b></p>
+			<p>{{ ach[1] }}</p>
+		</div>
+		{% endfor %}
+
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>

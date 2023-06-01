@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{{ data[0] }} - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<h1>{{ data[0] }}</h1>
+
+		<p>by <a href="{{ data[2] }}">{{ data[1] }}</a> in <a href="{{ data[4] }}">{{ data[3] }}</a> &gt; <a
+				href="{{ data[6] }}">{{ data[5] }}</a></p>
+		<p>{{ data[7] }} Views, {{ data[8] }} Favorites, {{ data[10] }}</p>
+	</center>
+
+	{% for step in data[9] %}
+	<h2>{{ step[0] }}</h2>
+	<div class="step-imgs">
+		{% for step_img in step[1] %}
+		<img src="{{ step_img[0] }}" alt="{{ step_img[1] }}">
+		{% endfor %}
+	</div>
+	<div class="step-vids">
+		{% for step_video in step[3] %}
+		<video src="{{ step_video[0] }}"></video>
+		{% endfor %}
+	</div>
+	{{ step[2]|safe }}
+	{% endfor %}
+
+	<br>
+	{% for index, comment in enumerate(data[11]) %}
+	<a href="{{ comment[4] }}">
+		<img style="display:inline-block;" width=30px height=30px src="{{ comment[1] }}" alt="{{ comment[2] }}">
+		<span>{{ comment[3] }}</span>
+	</a>
+	<span>{{ comment[5] }}</span>
+	<span>{{ comment[0] }} votes</span>
+	{{ comment[6]|safe }}
+	<input type="checkbox" id="replies{{ index }}" class="reply-button">
+	<label for="replies{{ index }}"><b>{{ comment[7] }} replies</b></label>
+	<div class="replies">
+		{% for reply in comment[8] %}
+		<blockquote>
+			<a href="{{ reply[4] }}">
+				<img style="display:inline-block;" width=30px height=30px src="{{ reply[1] }}" alt="{{ comment[2] }}">
+				<span>{{ reply[3] }}</span>
+			</a>
+			<span>{{ reply[5] }}</span>
+			<span>{{ reply[0] }} votes</span>
+			{{ reply[6]|safe }}
+		</blockquote>
+		{% endfor %}
+	</div>
+	<br>
+	{% endfor %}
+	{% include "footer.html" %}
+</body>
+
+</html>

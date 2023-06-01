@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Sitemap - Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+	{% include "style.html" %}
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+	<center>
+		<h1>Sitemap</h1>
+		<div class="sitemap-groups">
+			{% for group in data %}
+			<div class="sitemap-group">
+				<a href="{{ group[1] }}">
+					<h2>{{ group[0] }}</h2>
+				</a>
+				<ul>
+					{% for channel in group[2] %}
+					<li><a href="{{ channel[1] }}">{{ channel[0] }}</a></li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% endfor %}
+		</div>
+	</center>
+	{% include "footer.html" %}
+</body>
+
+</html>
