@@ -1,4 +1,5 @@
 <div align="center">
+<img src="static/img/logo.png">
 <h1>Indestructables</h1>
 Indestructables is a privacy-respecting frontend to Instructables
 </div>
