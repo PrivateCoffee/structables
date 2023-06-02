@@ -3,7 +3,9 @@
 <h1>Indestructables</h1>
 An open source alternative front-end to Instructables
 
-<a href="https://matrix.to/#/#indestructables:fedora.im">Matrix</a>
+<a href="https://matrix.to/#/#indestructables:fedora.im">
+    <img alt="Matrix" src="https://img.shields.io/matrix/indestructables:fedora.im?label=Matrix&color=darkgreen">
+</a>
 </div>
 
 # Instances
