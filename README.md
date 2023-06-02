@@ -1,7 +1,7 @@
 <div align="center">
 <img src="static/img/logo.png">
 <h1>Indestructables</h1>
-An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/snowcatridge10/indestructables">snowcatridge10's Indestructables</a> to use Playwright instead of Selenium.
+An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to use Playwright instead of Selenium.
 
 <a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
 
