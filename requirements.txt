@@ -1,4 +1,5 @@
 bs4
 requests
 flask
-selenium
+requests-html
+playwright
