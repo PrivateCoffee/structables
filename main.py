@@ -20,6 +20,96 @@ from argparse import ArgumentParser
 
 import os
 
+global_ibles = {}
+
+def proxy(src):
+    return "/proxy/?url=" + quote(str(src))
+
+def update_data():
+    playwright = sync_playwright().start()
+    browser = playwright.chromium.launch(headless=True)
+    page = browser.new_page()
+
+    channels = []
+
+    data = requests.get(f"https://www.instructables.com/sitemap/")
+
+    soup = BeautifulSoup(data.text, "html.parser")
+
+    main = soup.select("div.sitemap-content")[0]
+
+    groups = []
+    for group in main.select("div.group-section"):
+        channels.append(group.select("h2 a")[0].text.lower())
+
+    global_ibles["/projects"] = []
+
+    page.goto("https://www.instructables.com/projects")
+
+    while len(global_ibles["/projects"]) <= 0:
+        for ible in page.query_selector_all(".ibleCard__QPJVm"):
+            link = (
+                ible.query_selector("a")
+                .get_attribute("href")
+                .replace("https://www.instructables.com", "{instance_root_url}")
+            )
+            img = proxy(ible.query_selector("img").get_attribute("src"))
+
+            title = ible.query_selector(".title__t0fGQ").inner_text()
+            author = ible.query_selector("a[href^='/member/']").inner_text()
+            author_link = (
+                ible.query_selector("a[href^='/member/']")
+                .get_attribute("href")
+                .replace("https://www.instructables.com", "{instance_root_url}")
+            )
+
+            channel = "TEST"
+            channel_link = "TEST"
+
+            for c in channels:
+                try:
+                    channel = ible.query_selector("a[href^='/" + c + "']").inner_text()
+                    channel_link = (
+                        ible.query_selector("a[href^='/" + c + "']")
+                        .get_attribute("href")
+                        .replace("https://www.instructables.com", "{instance_root_url}")
+                    )
+                except:
+                    try:
+                        channel = ible.query_selector("a[href^='/projects/']").inner_text()
+                        channel_link = (
+                            ible.query_selector("a[href^='/projects/']")
+                            .get_attribute("href")
+                            .replace("https://www.instructables.com", "{instance_root_url}")
+                        )
+                    except:
+                        pass
+
+            stats = ible.query_selector(".stats__GFKyl")
+            views = 0
+            if stats.query_selector("div[title$=' views']"):
+                views = stats.query_selector("div[title$=' views']").inner_text()
+            favorites = 0
+            if stats.query_selector("div[title$=' favorites']"):
+                favorites = stats.query_selector("div[title$=' favorites']").inner_text()
+
+            global_ibles["/projects"].append(
+                [
+                    link,
+                    img,
+                    title,
+                    author,
+                    author_link,
+                    channel,
+                    channel_link,
+                    views,
+                    favorites,
+                ]
+            )
+
+    browser.close()
+    playwright.stop()
+
 debugmode = False
 
 if __name__ == "__main__":
@@ -50,100 +140,19 @@ if __name__ == "__main__":
 
 print("Loading...")
 
-def proxy(src):
-    return "/proxy/?url=" + quote(str(src))
+update_data()
+
+print("Started!")
+
+app = Flask(__name__, template_folder="templates", static_folder="static")
 
 def get_instance_root_url(request):
     return request.url_root
 
-playwright = sync_playwright().start()
-browser = playwright.chromium.launch(headless=True)
-page = browser.new_page()
-
-channels = []
-
-data = requests.get(f"https://www.instructables.com/sitemap/")
-
-soup = BeautifulSoup(data.text, "html.parser")
-
-main = soup.select("div.sitemap-content")[0]
-
-groups = []
-for group in main.select("div.group-section"):
-    channels.append(group.select("h2 a")[0].text.lower())
-
-global_ibles = {}
-
-global_ibles["/projects"] = []
-
-page.goto("https://www.instructables.com/projects")
-
-while len(global_ibles["/projects"]) <= 0:
-    for ible in page.query_selector_all(".ibleCard__QPJVm"):
-        link = (
-            ible.query_selector("a")
-            .get_attribute("href")
-            .replace("https://www.instructables.com", "{instance_root_url}")
-        )
-        img = proxy(ible.query_selector("img").get_attribute("src"))
-
-        title = ible.query_selector(".title__t0fGQ").inner_text()
-        author = ible.query_selector("a[href^='/member/']").inner_text()
-        author_link = (
-            ible.query_selector("a[href^='/member/']")
-            .get_attribute("href")
-            .replace("https://www.instructables.com", "{instance_root_url}")
-        )
-
-        channel = "TEST"
-        channel_link = "TEST"
-
-        for c in channels:
-            try:
-                channel = ible.query_selector("a[href^='/" + c + "']").inner_text()
-                channel_link = (
-                    ible.query_selector("a[href^='/" + c + "']")
-                    .get_attribute("href")
-                    .replace("https://www.instructables.com", "{instance_root_url}")
-                )
-            except:
-                try:
-                    channel = ible.query_selector("a[href^='/projects/']").inner_text()
-                    channel_link = (
-                        ible.query_selector("a[href^='/projects/']")
-                        .get_attribute("href")
-                        .replace("https://www.instructables.com", "{instance_root_url}")
-                    )
-                except:
-                    pass
-
-        stats = ible.query_selector(".stats__GFKyl")
-        views = 0
-        if stats.query_selector("div[title$=' views']"):
-            views = stats.query_selector("div[title$=' views']").inner_text()
-        favorites = 0
-        if stats.query_selector("div[title$=' favorites']"):
-            favorites = stats.query_selector("div[title$=' favorites']").inner_text()
-
-        global_ibles["/projects"].append(
-            [
-                link,
-                img,
-                title,
-                author,
-                author_link,
-                channel,
-                channel_link,
-                views,
-                favorites,
-            ]
-        )
-
-browser.close()
-playwright.stop()
-
-print("Started!")
-
+@app.route("/cron/")
+def cron():
+    update_data()
+    return "OK"
 
 def explore_lists(soup):
     list_ = []
@@ -406,10 +415,6 @@ def project_list(path, head, sort=""):
     playwright.stop()
 
     return render_template("projects.html", data=[head, ibles, path_])
-
-
-app = Flask(__name__, template_folder="templates", static_folder="static")
-
 
 @app.route("/sitemap/")
 def route_sitemap():
