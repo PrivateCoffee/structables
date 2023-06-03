@@ -117,6 +117,8 @@ def update_data():
 
             global_ibles["/projects"].append([link, img, title, author, author_link, channel, channel_link, views, favorites])
 
+update_data()
+
 firefox_capabilities = DesiredCapabilities.FIREFOX
 firefox_capabilities['marionette'] = True
 firefox_capabilities['binary'] = "C:/Program Files/Mozilla Firefox/firefox.exe"
