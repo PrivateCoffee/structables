@@ -1,0 +1,7 @@
+version: '1'
+services:
+  myservice:
+    build:
+      context: ./Dockerfile
+      dockerfile: Dockerfile
+    image: result/latest
