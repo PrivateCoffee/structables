@@ -1,13 +1,5 @@
 #!/usr/bin/env python
 
-from flask import Flask, render_template, request, redirect, Response, stream_with_context
-import requests
-import re
-from bs4 import BeautifulSoup
-from urllib.parse import quote, unquote
-from traceback import print_exc
-from requests_html import HTMLSession
-
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
@@ -16,6 +8,15 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.chrome.options import Options
+
+from flask import Flask, render_template, request, redirect, Response, stream_with_context
+import requests
+import re
+from bs4 import BeautifulSoup
+from urllib.parse import quote, unquote
+from traceback import print_exc
+from requests_html import HTMLSession
+from argparse import ArgumentParser
 import os
 
 debugmode = False
@@ -25,6 +26,31 @@ try:
         debugmode = True
 except:
     pass
+
+parser = ArgumentParser()
+parser.add_argument(
+    "-p",
+    "--port",
+    default=8002,
+    type=int,
+    help="Port to listen on",
+)
+parser.add_argument(
+    "-d",
+    "--debug",
+    action="store_true",
+    help="Enable debug mode",
+)
+parser.add_argument(
+    "-l",
+    "--listen-host",
+    default="127.0.0.1",
+    help="Host to listen on",
+)
+args = parser.parse_args()
+
+if args.debug:
+    debugmode = True
 
 print("Loading...")
 
@@ -59,40 +85,41 @@ global_ibles = {}
 
 global_ibles["/projects"] = []
 
-driver.get("https://www.instructables.com/projects")
+def update_data():
+    driver.get("https://www.instructables.com/projects")
 
-while len(global_ibles["/projects"]) <= 0:
-    for ible in driver.find_elements(By.CLASS_NAME, "ibleCard__QPJVm"):
-        link = ible.find_elements(By.CSS_SELECTOR, "a")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
-        img = proxy(ible.find_elements(By.CSS_SELECTOR, "img")[0].get_attribute("src"))
+    while len(global_ibles["/projects"]) <= 0:
+        for ible in driver.find_elements(By.CLASS_NAME, "ibleCard__QPJVm"):
+            link = ible.find_elements(By.CSS_SELECTOR, "a")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
+            img = proxy(ible.find_elements(By.CSS_SELECTOR, "img")[0].get_attribute("src"))
 
-        title = ible.find_elements(By.CLASS_NAME, "title__t0fGQ")[0].text
-        author = ible.find_elements(By.CSS_SELECTOR, "a[href^='/member/']")[0].text
-        author_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/member/']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
+            title = ible.find_elements(By.CLASS_NAME, "title__t0fGQ")[0].text
+            author = ible.find_elements(By.CSS_SELECTOR, "a[href^='/member/']")[0].text
+            author_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/member/']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
 
-        channel = "TEST"
-        channel_link = "TEST"
+            channel = "TEST"
+            channel_link = "TEST"
 
-        for c in channels:
-            try:
-                channel = ible.find_elements(By.CSS_SELECTOR, "a[href^='/" + c + "']")[0].text
-                channel_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/" + c + "']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
-            except:
+            for c in channels:
                 try:
-                    channel = ible.find_elements(By.CSS_SELECTOR, "a[href^='/projects/']")[0].text
-                    channel_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/projects/']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
+                    channel = ible.find_elements(By.CSS_SELECTOR, "a[href^='/" + c + "']")[0].text
+                    channel_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/" + c + "']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
                 except:
-                    pass
+                    try:
+                        channel = ible.find_elements(By.CSS_SELECTOR, "a[href^='/projects/']")[0].text
+                        channel_link = ible.find_elements(By.CSS_SELECTOR, "a[href^='/projects/']")[0].get_attribute("href").replace("https://www.instructables.com", instance_root_url)
+                    except:
+                        pass
 
-        stats = ible.find_elements(By.CLASS_NAME, "stats__GFKyl")[0]
-        views = 0
-        if stats.find_elements(By.CSS_SELECTOR, "div[title$=' views']") != []:
-            views = stats.find_elements(By.CSS_SELECTOR, "div[title$=' views']")[0].text
-        favorites = 0
-        if stats.find_elements(By.CSS_SELECTOR, "div[title$=' favorites']") != []:
-            favorites = stats.find_elements(By.CSS_SELECTOR, "div[title$=' favorites']")[0].text
+            stats = ible.find_elements(By.CLASS_NAME, "stats__GFKyl")[0]
+            views = 0
+            if stats.find_elements(By.CSS_SELECTOR, "div[title$=' views']") != []:
+                views = stats.find_elements(By.CSS_SELECTOR, "div[title$=' views']")[0].text
+            favorites = 0
+            if stats.find_elements(By.CSS_SELECTOR, "div[title$=' favorites']") != []:
+                favorites = stats.find_elements(By.CSS_SELECTOR, "div[title$=' favorites']")[0].text
 
-        global_ibles["/projects"].append([link, img, title, author, author_link, channel, channel_link, views, favorites])
+            global_ibles["/projects"].append([link, img, title, author, author_link, channel, channel_link, views, favorites])
 
 firefox_capabilities = DesiredCapabilities.FIREFOX
 firefox_capabilities['marionette'] = True
@@ -713,9 +740,14 @@ def route_proxy():
     else:
         return Response(render_template("400.html"), status=400)
 
+@app.route("/cron/")
+def cron():
+    update_data()
+    return "OK"
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html")
 
 if __name__ == '__main__':
-    app.run(port=8002, debug=debugmode)
+    app.run(port=args.port, host=args.listen_host, debug=debugmode)
