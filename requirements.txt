@@ -3,3 +3,4 @@ requests
 flask
 selenium
 requests_html
+webdriver-manager

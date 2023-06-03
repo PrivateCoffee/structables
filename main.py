@@ -18,6 +18,7 @@ from traceback import print_exc
 from requests_html import HTMLSession
 from argparse import ArgumentParser
 import os
+from webdriver_manager.chrome import ChromeDriverManager
 
 debugmode = False
 
@@ -62,12 +63,7 @@ instance_root_url = "http://127.0.0.1:8002"
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 
-if os.name == 'nt':
-    # Windows
-    driver = webdriver.Chrome('./chromedriver.exe', options=chrome_options)
-else:
-    # Linux
-    driver = webdriver.Chrome('./chromedriver', options=chrome_options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 
 channels = []
 
