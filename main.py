@@ -741,6 +741,10 @@ def cron():
     update_data()
     return "OK"
 
+@app.route("/privacypolicy/")
+def privacypolicy():
+    return render_template("privacypolicy.html")
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html")

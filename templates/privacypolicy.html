@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Privacy Policy - Indestructables</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    {% include "style.html" %}
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+    {% include "header.html" %}
+    <center>
+        <br>
+        <h1 style="font-size:2em;line-height:0em;">Privacy Policy</h1>
+        <br>
+        <p>{% include "privacypolicy.txt" %}</p>
+    </center>
+    {% include "footer.html" %}
+</body>
+
+</html>
