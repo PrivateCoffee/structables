@@ -9,7 +9,7 @@ An open source alternative front-end to Instructables
 </div>
 
 # Instances
-None, yet!
+See [here](https://indestructables.codeberg.page/#instances)
 
 # Run your own instance
 
