@@ -63,9 +63,6 @@ def update_data():
                 .replace("https://www.instructables.com", "{instance_root_url}")
             )
 
-            channel = "TEST"
-            channel_link = "TEST"
-
             for c in channels:
                 try:
                     channel = ible.query_selector("a[href^='/" + c + "']").inner_text()
@@ -1018,10 +1015,13 @@ def route_proxy():
     else:
         return Response(render_template("400.html"), status=400)
 
+@app.route("/privacypolicy/")
+def privacypolicy():
+    return render_template("privacypolicy.html")
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html")
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(port=args.port, host=args.listen_host, debug=debugmode)
