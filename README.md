@@ -1,16 +1,23 @@
 <div align="center">
 <img src="static/img/logo.png">
 <h1>Indestructables</h1>
-An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to use Playwright instead of Selenium.
+An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to use Playwright instead of Selenium, which itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
 
-<a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
+<ul>
+    <li>
+        <a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
+    </li>
+    <li>
+        <a href="https://mto.vern.cc/#/%23cobra-frontends:vern.cc">Cobra's Matrix Room</a>
+    </li>
+</ul>
 
 </div>
 
 # Instances
 
 | URL                                                                                | Provided by                               | Country | Comments |
-|------------------------------------------------------------------------------------|-------------------------------------------|---------|----------|
+| ---------------------------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
 | [https://indestructables.private.coffee/](https://indestructables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
 
 # Run your own instance
@@ -36,3 +43,7 @@ Furthermore, you need to install the Chromium binary used by Playwright. You can
 1. Clone the repository
 2. Run `python3 main.py`
 3. Connect to http://localhost:8002
+
+## License
+
+This project, as well as the two projects it is based on, are licensed under the GNU Affero General Public License v3. See the LICENSE file for more information.
