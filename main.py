@@ -8,8 +8,10 @@ from flask import (
     Response,
     stream_with_context,
 )
+
 import requests
 import re
+
 from bs4 import BeautifulSoup
 from urllib.parse import quote, unquote
 from traceback import print_exc
@@ -17,6 +19,8 @@ from requests_html import HTMLSession
 from playwright.sync_api import sync_playwright
 from urllib.parse import urljoin
 from argparse import ArgumentParser
+
+from werkzeug.exceptions import BadRequest, abort, InternalServerError, NotFound
 
 import os
 
@@ -258,9 +262,7 @@ def member_header(header):
 def category_page(path, name, teachers=False):
     data = requests.get("https://www.instructables.com" + path)
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -417,9 +419,7 @@ def project_list(path, head, sort=""):
 def route_sitemap():
     data = requests.get(f"https://www.instructables.com/sitemap/")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -446,9 +446,7 @@ def route_contest_archive():
         page = request.args.get("page")
     data = requests.get(f"https://www.instructables.com/contest/archive/?page={page}")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -485,9 +483,7 @@ def route_contest_archive():
 def route_contest(contest):
     data = requests.get(f"https://www.instructables.com/contest/{contest}/")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -541,9 +537,7 @@ def route_contest(contest):
 def route_contests():
     data = requests.get("https://www.instructables.com/contest/")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -668,9 +662,7 @@ def route_sitemap_circuits(category, subcategory):
 def route_member_instructables(member):
     data = requests.get(f"https://www.instructables.com/member/{member}/instructables")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -709,9 +701,7 @@ def route_member(member):
         f"https://www.instructables.com/member/{member}/", headers=headers
     )
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -765,9 +755,7 @@ def route_member(member):
 def route_article(article):
     data = requests.get(f"https://www.instructables.com/{article}/")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -948,7 +936,7 @@ def route_article(article):
 
     except Exception:
         print_exc()
-        return Response(render_template("404.html"), status=404)
+        raise InternalServerError()
 
 
 @app.route("/<category>/<channel>/")
@@ -964,16 +952,14 @@ def route_channel_redirect(category, channel):
     ):
         return redirect(f"/{category}/{channel}/projects/", 307)
     else:
-        return Response(render_template("404.html"), status=404)
+        raise NotFound()
 
 
 @app.route("/")
 def route_explore():
     data = requests.get("https://www.instructables.com/")
     if data.status_code != 200:
-        return Response(
-            render_template(str(data.status_code) + ".html"), status=data.status_code
-        )
+        abort(data.status_code)
 
     soup = BeautifulSoup(data.text, "html.parser")
 
@@ -1011,9 +997,9 @@ def route_proxy():
             data = requests.get(unquote(url))
             return Response(data.content, content_type=data.headers["content-type"])
         else:
-            return Response(render_template("400.html"), status=400)
+            raise BadRequest()
     else:
-        return Response(render_template("400.html"), status=400)
+        raise BadRequest()
 
 @app.route("/privacypolicy/")
 def privacypolicy():
@@ -1022,6 +1008,18 @@ def privacypolicy():
 @app.errorhandler(404)
 def not_found(e):
     return render_template("404.html")
+
+@app.errorhandler(400)
+def bad_request(e):
+    return render_template("400.html")
+
+@app.errorhandler(429)
+def too_many_requests(e):
+    return render_template("429.html")
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template("500.html")
 
 if __name__ == '__main__':
     app.run(port=args.port, host=args.listen_host, debug=debugmode)
