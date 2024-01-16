@@ -1,9 +1,12 @@
 <div align="center">
 <img src="static/img/logo.png">
 <h1>Indestructables</h1>
-An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to use Playwright instead of Selenium, which itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
+An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to get rid of Selenium. Indestructables itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
 
 <ul>
+    <li>
+        <a href="https://matrix.private.cf/#/#private.coffee:private.coffee">Private.coffee Matrix Room</a>
+    </li>
     <li>
         <a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
     </li>
@@ -29,8 +32,6 @@ First, create a virtual environment with `python3 -m venv venv` and activate it 
 `pip3 install -r requirements.txt`.
 
 For the production environment, you also need the uWSGI Python3 plugin. On Debian, it can be installed via `apt install uwsgi-plugin-python3`
-
-Furthermore, you need to install the Chromium binary used by Playwright. You can do this by running `playwright install chromium`.
 
 ## Production
 
