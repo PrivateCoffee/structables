@@ -26,7 +26,9 @@
       <video src="{{ step_video }}"></video>
       {% endfor %}
     </div>
-    {{ step.text|safe }} {% endfor %}
+    {{ step.text|safe }}
+  </div>
+  {% endfor %}
 
     <br />
     {% for index, comment in enumerate(comments) %}
