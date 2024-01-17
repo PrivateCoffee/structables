@@ -1,6 +1,6 @@
 <div align="center">
 <img src="static/img/logo.png">
-<h1>Indestructables</h1>
+<h1>Structables</h1>
 An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to get rid of Selenium. Indestructables itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
 
 <ul>
