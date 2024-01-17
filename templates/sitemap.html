@@ -1,21 +1,12 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>Sitemap - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
-	{% include "header.html" %}
+{% block content %}
 	<center>
 		<h1>Sitemap</h1>
-		<div class="sitemap-groups">
-			{% for group in data %}
-			<div class="sitemap-group">
+		<div class="container">
+			<div class="row sitemap-groups"></div>
+			{% for group in groups %}
+			<div class="sitemap-group col-xs-12 col-sm-6 col-lg-4">
 				<a href="{{ group[1] }}">
 					<h2>{{ group[0] }}</h2>
 				</a>
@@ -27,8 +18,6 @@
 			</div>
 			{% endfor %}
 		</div>
+		</div>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

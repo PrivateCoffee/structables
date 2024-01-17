@@ -1,35 +1,23 @@
-<!DOCTYPE html>
-<html>
 
-<head>
-	<title>{{ data[0] }} - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
+{% extends "base.html" %}
 
-<body>
-	{% include "header.html" %}
+{% block content %}
 	<center>
-		<img src="{{ data[1] }}" alt="{{ data[0] }}" style="max-width:98vw;">
-		<p>{{ data[2] }} Entries, {{ data[3] }} Prizes</p>
+		<img src="{{ img }}" alt="{{ title }}" style="max-width:98vw;">
+		<p>{{ entry_count }} Entries, {{ prizes }} Prizes</p>
 		<br>
-		{{ data[4]|safe }}
+		{{ info|safe }}
 		<div class="ible-list">
-			{% for ible in data[5] %}
+			{% for ible in entries %}
 			<div class="ible-list-item">
-				<a href="{{ ible[0] }}" style="color:#bbc2cf;">
-					<img style="max-width:350px;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
-					<p>{{ ible[2] }}</p>
+				<a href="{{ ible.link }}" style="color:#bbc2cf;">
+					<img style="max-width:350px;" src="{{ ible.entry_img }}" alt="{{ ible.entry_title }}">
+					<p>{{ ible.entry_title }}</p>
 				</a>
-				<p>by <a href="{{ ible[4] }}">{{ ible[3] }}</a> in <a href="{{ ible[6] }}">{{ ible[5] }}</a></p>
-				<p>{{ ible[7] }} Views</p>
+				<p>by <a href="{{ ible.author_link }}">{{ ible.author }}</a> in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a></p>
+				<p>{{ ible.views }} Views</p>
 			</div>
 			{% endfor %}
 		</div>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

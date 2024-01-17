@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{% if title %}{{ title }} - {% endif %}Indestructables</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
+</head>
+
+<body>
+	{% include "header.html" %}
+    {% block content %}
+    {% endblock %}
+	{% include "footer.html" %}
+</body>
+
+</html>

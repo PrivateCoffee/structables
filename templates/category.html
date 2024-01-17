@@ -1,55 +1,42 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>{{ data[0] }} - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
-	{% include "header.html" %}
+{% block content %}
 	<center>
-		<h1>{{ data[0] }}</h1>
+		<h1>{{ title }}</h1>
 		<div class="channel-list">
-			{% for channel in data[1] %}
+			{% for channel in channels %}
 			<div style="display:inline-block">
-				<a href="{{ channel[0] }}" style="position:relative;text-align:center;color:white;">
-					<img src="{{ channel[2] }}" alt="{{ channel[1] }}" style="display:inline-block;max-width:200px;">
-					<p style="position:absolute;bottom:0px;left:4px;font-weight:thin;">{{ channel[1] }}</p>
+				<a href="{{ channel.link }}" style="position:relative;text-align:center;color:white;">
+					<img src="{{ channel.img }}" alt="{{ channel.title }}" style="display:inline-block;max-width:200px;">
+					<p style="position:absolute;bottom:0px;left:4px;font-weight:thin;">{{ channel.title }}</p>
 				</a>
 			</div>
 			{% endfor %}
 		</div>
-		<h2><a href="{{ data[4] }}projects/">Featured Projects</a></h2>
+		<h2><a href="{{ path }}projects/">Featured Projects</a></h2>
 		<div class="project-list">
-			{% for ible in data[2] %}
+			{% for ible in ibles %}
 			<div class="ible-list-item">
-				<a href="{{ ible[0] }}">
-					<img src="{{ ible[1] }}" alt="{{ ible[2] }}">
+				<a href="{{ ible.link }}">
+					<img src="{{ ible.img }}" alt="{{ ible.title }}">
 					<br>
-					<span><b>{{ ible[2] }}</b></span>
+					<span><b>{{ ible.title }}</b></span>
 				</a>
-				<span>by <a href="{{ ible[4] }}">{{ ible[3] }}</a></span>
-				<span>in <a href="{{ ible[6] }}">{{ ible[5] }}</a></span>
+				<span>by <a href="{{ ible.author_link }}">{{ ible.author }}</a></span>
+				<span>in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a></span>
 				<br>
-				<span>{{ ible[7] }} Views&nbsp;&nbsp;</span>
-				<span>{{ ible[8] }} Favorites</span>
+				<span>{{ ible.views }} Views&nbsp;&nbsp;</span>
+				<span>{{ ible.favorites }} Favorites</span>
 			</div>
 			{% endfor %}
 		</div>
 		<h2><a href="/contest/">Contests</a></h2>
 		<div style="display:inline-block;">
-			{% for contest in data[3] %}
-			<a href="{{ contest[0] }}" style="color:#bbc2cf;">
-				<img src="{{ contest[1] }}" alt="{{ contest[2] }}" style="max-width:400px;">
+			{% for contest in contests %}
+			<a href="{{ contest.link }}" style="color:#bbc2cf;">
+				<img src="{{ contest.img }}" alt="{{ contest.title }}" style="max-width:400px;">
 			</a>
 			{% endfor %}
 		</div>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

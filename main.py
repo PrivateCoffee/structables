@@ -24,6 +24,7 @@ import os
 import json
 import re
 import logging
+import pathlib
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -126,17 +127,17 @@ def update_data():
             favorites = ible["document"]["favorites"]
 
             global_ibles["/projects"].append(
-                [
-                    link,
-                    img,
-                    title,
-                    author,
-                    author_link,
-                    channel,
-                    channel_link,
-                    views,
-                    favorites,
-                ]
+                {
+                    "link": link,
+                    "img": img,
+                    "title": title,
+                    "author": author,
+                    "author_link": author_link,
+                    "channel": channel,
+                    "channel_link": channel_link,
+                    "views": views,
+                    "favorites": favorites,
+                }
             )
 
 
@@ -204,18 +205,18 @@ def explore_lists(soup):
         if ible.select("span.ible-favorites") != []:
             favorites = ible.select("span.ible-favorites")[0].text
         list_.append(
-            [
-                link,
-                img,
-                alt,
-                title,
-                author,
-                author_link,
-                channel,
-                channel_link,
-                favorites,
-                views,
-            ]
+            {
+                "link": link,
+                "img": img,
+                "alt": alt,
+                "title": title,
+                "author": author,
+                "author_link": author_link,
+                "channel": channel,
+                "channel_link": channel_link,
+                "favorites": favorites,
+                "views": views,
+            }
         )
     return list_
 
@@ -275,20 +276,22 @@ def member_header(header):
     else:
         bio = ""
 
-    return [
-        avatar,
-        title,
-        location,
-        signup,
-        instructables,
-        views,
-        comments,
-        followers,
-        bio,
-    ]
+    return {
+        "avatar": avatar,
+        "title": title,
+        "location": location,
+        "signup": signup,
+        "instructables": instructables,
+        "views": views,
+        "comments": comments,
+        "followers": followers,
+        "bio": bio,
+    }
 
 
 def category_page(path, name, teachers=False):
+    # TODO: Figure out why this doesn't work - probably using the search function would help...
+
     try:
         data = urlopen("https://www.instructables.com" + path)
     except HTTPError as e:
@@ -304,7 +307,7 @@ def category_page(path, name, teachers=False):
         )
         title = card.select("a img")[0].get("alt")
 
-        channels.append([link, title, img])
+        channels.append({"link": link, "title": title, "img": img})
 
     ibles = []
     for ible in soup.select(
@@ -329,17 +332,17 @@ def category_page(path, name, teachers=False):
             favorites = stats.select("span.ible-favorites")[0].text
 
         ibles.append(
-            [
-                link,
-                img,
-                title,
-                author,
-                author_link,
-                channel,
-                channel_link,
-                views,
-                favorites,
-            ]
+            {
+                "link": link,
+                "img": img,
+                "title": title,
+                "author": author,
+                "author_link": author_link,
+                "channel": channel,
+                "channel_link": channel_link,
+                "views": views,
+                "favorites": favorites,
+            }
         )
 
     contests = []
@@ -350,10 +353,15 @@ def category_page(path, name, teachers=False):
         img = proxy(contest.select("a noscript img")[0].get("src"))
         title = contest.select("a img")[0].get("alt")
 
-        contests.append([link, img, title])
+        contests.append({"link": link, "img": img, "title": title})
 
     return render_template(
-        "category.html", data=[name, channels, ibles, contests, path]
+        "category.html",
+        name=name,
+        channels=channels,
+        ibles=ibles,
+        contests=contests,
+        path=path,
     )
 
 
@@ -393,23 +401,24 @@ def project_list(path, head, sort=""):
             favorites = ible["document"]["favorites"]
 
             ibles.append(
-                [
-                    link,
-                    img,
-                    title,
-                    author,
-                    author_link,
-                    channel,
-                    channel_link,
-                    views,
-                    favorites,
-                ]
+                {
+                    "link": link,
+                    "img": img,
+                    "title": title,
+                    "author": author,
+                    "author_link": author_link,
+                    "channel": channel,
+                    "channel_link": channel_link,
+                    "views": views,
+                    "favorites": favorites,
+                }
             )
 
             if len(ibles) >= 8:
                 break
 
-    return render_template("projects.html", data=[head, ibles, path])
+    print(ibles)
+    return render_template("projects.html", title=head, ibles=ibles, path=path)
 
 
 @app.route("/sitemap/")
@@ -447,7 +456,7 @@ def route_sitemap(path=""):
             channels.append([channel, channel_link])
         groups.append(["", "", channels])
 
-    return render_template("sitemap.html", data=groups)
+    return render_template("sitemap.html", title="Sitemap", groups=groups)
 
 
 @app.route("/contest/archive/")
@@ -488,7 +497,12 @@ def route_contest_archive():
     pagination = main.select("nav.pagination ul.pagination")[0]
 
     return render_template(
-        "archives.html", data=[page, contest_count, pagination, contest_list]
+        "archives.html",
+        title=f"Contest Archives (Page {page})",
+        page=page,
+        contest_count=contest_count,
+        pagination=pagination,
+        contest_list=contest_list,
     )
 
 
@@ -530,20 +544,26 @@ def route_contest(contest):
         views = entry.select(".ible-views")[0].text
 
         entry_list.append(
-            [
-                link,
-                entry_img,
-                entry_title,
-                author,
-                author_link,
-                channel,
-                channel_link,
-                views,
-            ]
+            {
+                "link": link,
+                "entry_img": entry_img,
+                "entry_title": entry_title,
+                "author": author,
+                "author_link": author_link,
+                "channel": channel,
+                "channel_link": channel_link,
+                "views": views,
+            }
         )
 
     return render_template(
-        "contest.html", data=[title, img, entry_count, prizes, info, entry_list]
+        "contest.html",
+        title=title,
+        img=img,
+        entry_count=entry_count,
+        prizes=prizes,
+        info=info,
+        entry_list=entry_list,
     )
 
 
@@ -567,7 +587,16 @@ def route_contests():
         prizes = contest.select("span.contest-meta-count")[0].text
         entries = contest.select("span.contest-meta-count")[1].text
 
-        contests.append([link, img, alt, deadline, prizes, entries])
+        contests.append(
+            {
+                "link": link,
+                "img": img,
+                "alt": alt,
+                "deadline": deadline,
+                "prizes": prizes,
+                "entries": entries,
+            }
+        )
 
     closed = []
     for display in soup.select("div.contest-winner-display"):
@@ -583,11 +612,25 @@ def route_contests():
             item_author_link = featured_item.select("a.author")[0].get("href")
 
             featured_items.append(
-                [item_link, item_img, item_title, item_author, item_author_link]
+                {
+                    "link": item_link,
+                    "img": item_img,
+                    "title": item_title,
+                    "author": item_author,
+                    "author_link": item_author_link,
+                }
             )
-        closed.append([link, img, alt, featured_items])
+        closed.append(
+            {"link": link, "img": img, "alt": alt, "featured_items": featured_items}
+        )
 
-    return render_template("contests.html", data=[contest_count, contests, closed])
+    return render_template(
+        "contests.html",
+        title="Contests",
+        contest_count=contest_count,
+        contests=contests,
+        closed=closed,
+    )
 
 
 @app.route("/<category>/<channel>/projects/")
@@ -623,6 +666,7 @@ def route_projects():
 
 @app.route("/search")
 def route_search():
+    # TODO: Fix this (using search function)
     return project_list("/search/?q=" + request.args["q"] + "&projects=all", "Search")
 
 
@@ -700,10 +744,21 @@ def route_member_instructables(member):
         if stats.select("span.ible-favorites") != []:
             favorites = stats.select("span.ible-favorites")[0].text
 
-        ible_list.append([link, img, title, views, favorites])
+        ible_list.append(
+            {
+                "link": link,
+                "img": img,
+                "title": title,
+                "views": views,
+                "favorites": favorites,
+            }
+        )
 
     return render_template(
-        "member-instructables.html", data=header_content + [ible_list]
+        "member-instructables.html",
+        title=f"{header_content['title']}'s Instructables",
+        header_content=header_content,
+        ibles=ible_list,
     )
 
 
@@ -741,7 +796,7 @@ def route_member(member):
             ible_link = ible.select("div.image-wrapper")[0].a.get("href")
             ible_img = proxy(ible.select("div.image-wrapper a img")[0].get("src"))
 
-            ibles.append([ible_title, ible_link, ible_img])
+            ibles.append({"title": ible_title, "link": ible_link, "img": ible_img})
 
     ach_list = body.select(
         "div.two-col-section div.right-col-section.centered-sidebar div.boxed-content.about-me"
@@ -766,7 +821,12 @@ def route_member(member):
 
     return render_template(
         "member.html",
-        data=header_content + [ible_list_title, ibles, ach_list_title, achs],
+        title=header_content["title"] + "'s Profile",
+        header_content=header_content,
+        ible_list_title=ible_list_title,
+        ibles=ibles,
+        ach_list_title=ach_list_title,
+        achs=achs,
     )
 
 
@@ -782,7 +842,7 @@ def route_article(article):
     try:
         header = soup.select("header")
         if len(header) < 2 and soup.select("title")[0].text.contains("Pending Review"):
-            return render_template("article-review.html")
+            return render_template("article-review.html", title="Pending Review")
         else:
             header = header[1]
         title = header.find("h1").text
@@ -807,11 +867,15 @@ def route_article(article):
 
             steps = []
             for step in body.select("section.step"):
+                print(step)
                 step_title = step.select("h2")[0].text
 
                 step_imgs = []
-                for img in step.select("div.no-js-photoset img"):
-                    step_imgs.append([proxy(img.get("src")), img.get("alt")])
+                # TODO: Handle download links
+                for img in step.select("img"):
+                    step_imgs.append(
+                        {"src": proxy(img.get("src")), "alt": img.get("alt")}
+                    )
 
                 step_videos = []
                 for img in step.select("video"):
@@ -822,10 +886,19 @@ def route_article(article):
                     "https://content.instructables.com",
                     "/proxy/?url=https://content.instructables.com",
                 )
-                steps.append([step_title, step_imgs, step_text, step_videos])
+                steps.append(
+                    {
+                        "title": step_title,
+                        "imgs": step_imgs,
+                        "text": step_text,
+                        "videos": step_videos,
+                    }
+                )
 
             comments_list = []
             comment_count = 0
+
+            # TODO: Fix comments
 
             # comments = body.select("section.discussion")[0]
 
@@ -865,20 +938,18 @@ def route_article(article):
             #         comments_list.append([comment_votes, comment_author_img_src, comment_author_img_alt, comment_author, comment_author_link, comment_date, comment_text, comment_reply_count, reply_list])
             return render_template(
                 "article.html",
-                data=[
-                    title,
-                    author,
-                    author_link,
-                    category,
-                    category_link,
-                    channel,
-                    channel_link,
-                    views,
-                    favorites,
-                    steps,
-                    comment_count,
-                    comments_list,
-                ],
+                title=title,
+                author=author,
+                author_link=author_link,
+                category=category,
+                category_link=category_link,
+                channel=channel,
+                channel_link=channel_link,
+                views=views,
+                favorites=favorites,
+                steps=steps,
+                comment_count=comment_count,
+                comments_list=comments_list,
                 enumerate=enumerate,
             )
         else:
@@ -924,32 +995,30 @@ def route_article(article):
                         "div.thumbnail div.thumbnail-info span.origin a"
                     )[0].get("href")
                 thumbnails.append(
-                    [
-                        text,
-                        link,
-                        img,
-                        thumbnail_title,
-                        thumbnail_author,
-                        thumbnail_author_link,
-                        thumbnail_channel,
-                        thumbnail_channel_link,
-                    ]
+                    {
+                        "text": text,
+                        "link": link,
+                        "img": img,
+                        "title": thumbnail_title,
+                        "author": thumbnail_author,
+                        "author_link": thumbnail_author_link,
+                        "channel": thumbnail_channel,
+                        "channel_link": thumbnail_channel_link,
+                    }
                 )
 
             return render_template(
                 "collection.html",
-                data=[
-                    title,
-                    author,
-                    author_link,
-                    category,
-                    category_link,
-                    channel,
-                    channel_link,
-                    views,
-                    favorites,
-                    thumbnails,
-                ],
+                title=title,
+                author=author,
+                author_link=author_link,
+                category=category,
+                category_link=category_link,
+                channel=channel,
+                channel_link=channel_link,
+                views=views,
+                favorites=favorites,
+                thumbnails=thumbnails,
             )
 
     except Exception:
@@ -1003,7 +1072,16 @@ def route_explore():
 
     return render_template(
         "index.html",
-        data=[title, circuits, workshop, craft, cooking, living, outside, teachers],
+        title=title,
+        sections=[
+            ("Circuits", "/circuits", circuits),
+            ("Workshop", "/workshop", workshop),
+            ("Craft", "/craft", craft),
+            ("Cooking", "/cooking", cooking),
+            ("Living", "/living", living),
+            ("Outside", "/outside", outside),
+            ("Teachers", "/teachers", teachers),
+        ],
     )
 
 
@@ -1028,8 +1106,17 @@ def route_proxy():
 
 @app.route("/privacypolicy/")
 def privacypolicy():
-    # TODO: Make this dynamic
-    return render_template("privacypolicy.html")
+    content = "No privacy policy found."
+
+    try:
+        with (pathlib.Path(__file__).parent / "privacy.txt").open() as f:
+            content = f.read()
+    except:
+        pass
+
+    return render_template(
+        "privacypolicy.html", title="Privacy Policy", content=content
+    )
 
 
 @app.errorhandler(404)

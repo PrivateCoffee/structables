@@ -1,39 +1,33 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %} {% block content %}
+<center>
+  <h1>{{ title }}</h1>
+  <span><a href="{{ path }}/">Featured</a></span>
+  <span><a href="{{ path }}/recent/">Recent</a></span>
+  <span><a href="{{ path }}/popular/">Popular</a></span>
+  <span><a href="{{ path }}/views/">Views</a></span>
+  <span><a href="{{ path }}/winners/">Winners</a></span>
+  <br />
 
-<head>
-	<title>{{ data[0] }} - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
-	{% include "header.html" %}
-	<center>
-		<h1>{{ data[0] }}</h1>
-		<span><a href="{{ data[2] }}/">Featured</a></span>
-		<span><a href="{{ data[2] }}/recent/">Recent</a></span>
-		<span><a href="{{ data[2] }}/popular/">Popular</a></span>
-		<span><a href="{{ data[2] }}/views/">Views</a></span>
-		<span><a href="{{ data[2] }}/winners/">Winners</a></span>
-		<br>
-
-		<div style="max-width:90%;">
-			{% for ible in data[1] %}
-			<div class="ible-list-item">
-				<a href="{{ ible[0] }}" style="color:#bbc2cf;">
-					<img style="max-width:350px;" src="{{ ible[1] }}" alt="{{ ible[2] }}">
-					<p>{{ ible[2] }}</p>
-				</a>
-				<p>by <a href="{{ ible[4] }}">{{ ible[3] }}</a> in <a href="{{ ible[6] }}">{{ ible[5] }}</a></p>
-				<p>{{ ible[7] }} Views, {{ ible[8] }} Favorites</p>
-			</div>
-			{% endfor %}
-		</div>
-	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+  <div class="container">
+    <div class="row">
+      {% for ible in ibles %}
+      <div class="ible-list-item col-xs-12 col-sm-6 col-lg-4">
+        <a href="{{ ible.link }}" style="color: #bbc2cf">
+          <img
+            style="max-width: 350px"
+            src="{{ ible.img }}"
+            alt="{{ ible.title }}"
+          />
+          <p>{{ ible.title }}</p>
+        </a>
+        <p>
+          by <a href="{{ ible.author_link }}">{{ ible.author }}</a> in
+          <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
+        </p>
+        <p>{{ ible.views }} Views, {{ ible.favorites }} Favorites</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</center>
+{% endblock %}

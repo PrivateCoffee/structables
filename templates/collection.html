@@ -1,41 +1,28 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>{{ data[0] }} - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
-	{% include "header.html" %}
+{% block content %}
 	<center>
-		<h1>{{ data[0] }}</h1>
+		<h1>{{ title }}</h1>
 
-		<p>by <a href="{{ data[2] }}">{{ data[1] }}</a> in <a href="{{ data[4] }}">{{ data[3] }}</a> &gt; <a
-				href="{{ data[6] }}">{{ data[5] }}</a></p>
-		<p>{{ data[7] }} Views, {{ data[8] }} Favorites, {{ data[10] }}</p>
+		<p>by <a href="{{ author_link }}">{{ author }}</a> in <a href="{{ category_link }}">{{ category }}</a> &gt; <a
+				href="{{ channel_link }}">{{ channel }}</a></p>
+		<p>{{ views }} Views, {{ favorites }} Favorites</p>
 
 		<div style="max-width:90%;">
-			{% for thumbnail in data[9] %}
+			{% for thumbnail in thumbnails %}
 			<div class="ible-list-item">
-				{% if thumbnail[0] == '' %}
-				<a href="{{ thumbnail[1] }}" style="color:#bbc2cf;">
-					<img style="max-width:350px;" src="{{ thumbnail[2] }}" alt="{{ thumbnail[3] }}">
-					<p>{{ thumbnail[3] }}</p>
+				{% if thumbnail.title == '' %}
+				<a href="{{ thumbnail.link }}" style="color:#bbc2cf;">
+					<img style="max-width:350px;" src="{{ thumbnail.img }}" alt="{{ thumbnail.author }}">
+					<p>{{ thumbnail.author }}</p>
 				</a>
-				<p>by <a href="{{ thumbnail[5] }}">{{ thumbnail[4] }}</a> in <a href="{{ thumbnail[7] }}">{{
-						thumbnail[6] }}</a> </p>
+				<p>by <a href="{{ thumbnail.author_link }}">{{ thumbnail.author }}</a> in <a href="{{ thumbnail.channel_link }}">{{
+						thumbnail.channel }}</a> </p>
 				{% else %}
-				{{ thumbnail[0]|safe }}
+				{{ thumbnail.text|safe }}
 				{% endif %}
 			</div>
 			{% endfor %}
 		</div>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

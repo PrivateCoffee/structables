@@ -1,21 +1,7 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-	<title>Pending Review - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
-	{% include "header.html" %}
+{% extends "base.html" %}
+{% block content %}
 	<center>
 		<h1>This content is being reviewed</h1>
 		<p>This Instructable was just published and is still pending review.</p>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

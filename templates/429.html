@@ -1,21 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>429 - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-</head>
-
-<body>
+{% block content %}
 	{% include "header.html" %}
 	<center>
-		<h1 style="font-size:10em;line-height:0em;">429</h1>
+		<h1>429</h1>
 		<p>This instance is being rate-limited</p>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}

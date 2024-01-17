@@ -1,35 +1,8 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-	<title>404 - Indestructables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
-	{% include "style.html" %}
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
-	<style>
-		.go_here_link {
-			background-color: #4CAF50;
-			/* Green */
-			border: none;
-			color: white;
-			padding: 15px 32px;
-			text-align: center;
-			text-decoration: none;
-			display: inline-block;
-			font-size: 16px;
-		}
-
-		.go_here_link:hover {
-			color: black;
-		}
-	</style>
-</head>
-
-<body>
-	{% include "header.html" %}
+{% block content %}
 	<center>
-		<h1 style="font-size:10em;line-height:0em;">404</h1>
+		<h1>404</h1>
 		<p>This resource cannot be found</p>
 		<br>
 		<p>Why don't you try one of these instead?</p>
@@ -37,7 +10,4 @@
 		<a href="/contest" class="go_here_link">Contests</a>
 		<br><br>
 	</center>
-	{% include "footer.html" %}
-</body>
-
-</html>
+{% endblock %}
