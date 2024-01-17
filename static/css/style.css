@@ -200,3 +200,8 @@ header {
 .go_here_link:hover {
   color: black;
 }
+
+.wrap {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
