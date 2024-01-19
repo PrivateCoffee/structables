@@ -5,7 +5,7 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 
 <ul>
     <li>
-        <a href="https://matrix.private.cf/#/#private.coffee:private.coffee">Private.coffee Matrix Room</a>
+        <a href="https://matrix.private.cf/#/#structables:private.coffee">Private.coffee Matrix Room</a>
     </li>
     <li>
         <a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
