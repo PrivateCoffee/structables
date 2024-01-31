@@ -1,28 +1,34 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block content %}
+<div class="container text-center">
+  <h1>{{ title }}</h1>
+  <p>
+    by <a href="{{ author_link }}">{{ author }}</a> in
+    <a href="{{ category_link }}">{{ category }}</a> &gt;
+    <a href="{{ channel_link }}">{{ channel }}</a>
+  </p>
+  <p>{{ views }} Views, {{ favorites }} Favorites</p>
 
-{% block content %}
-	<center>
-		<h1>{{ title }}</h1>
+  <div class="row justify-content-center">
+    {% for thumbnail in thumbnails %}
+    <div class="col-md-4 mb-3">
+      <div class="ible-list-item">
+        <a href="{{ thumbnail.link }}" style="color: #bbc2cf">
+          <img
+            class="img-fluid"
+            src="{{ thumbnail.img }}"
+            alt="{{ thumbnail.title }}"
+            style="max-width: 350px"
+          />
+          <p>{{ thumbnail.author }}</p>
+        </a>
+        <p>
+          by <a href="{{ thumbnail.author_link }}">{{ thumbnail.author }}</a> in
+          <a href="{{ thumbnail.channel_link }}">{{ thumbnail.channel }}</a>
+        </p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
 
-		<p>by <a href="{{ author_link }}">{{ author }}</a> in <a href="{{ category_link }}">{{ category }}</a> &gt; <a
-				href="{{ channel_link }}">{{ channel }}</a></p>
-		<p>{{ views }} Views, {{ favorites }} Favorites</p>
-
-		<div style="max-width:90%;">
-			{% for thumbnail in thumbnails %}
-			<div class="ible-list-item">
-				{% if thumbnail.title == '' %}
-				<a href="{{ thumbnail.link }}" style="color:#bbc2cf;">
-					<img style="max-width:350px;" src="{{ thumbnail.img }}" alt="{{ thumbnail.author }}">
-					<p>{{ thumbnail.author }}</p>
-				</a>
-				<p>by <a href="{{ thumbnail.author_link }}">{{ thumbnail.author }}</a> in <a href="{{ thumbnail.channel_link }}">{{
-						thumbnail.channel }}</a> </p>
-				{% else %}
-				{{ thumbnail.text|safe }}
-				{% endif %}
-			</div>
-			{% endfor %}
-		</div>
-	</center>
 {% endblock %}

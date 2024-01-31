@@ -1,0 +1,12 @@
+<html>
+<head>
+  <title>iframe content</title>
+</head>
+<body>
+    <h1>Blocked iframe</h1>
+    <p>This page contains content from outside Instructables.com. This was blocked for your safety.</p>
+    <p>It tries to load the following URL:</p>
+    <p><a href="{{ url | safe }}" target="_self">{{ url | safe }}</a></p>
+    <p>Click <a href="{{ url | safe }}" target="_self">here</a> to load the content.</p>
+</body>
+</html>

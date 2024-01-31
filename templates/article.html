@@ -14,21 +14,63 @@
 
 <div class="container">
   {% for step in steps %}
-  <div class="row wrap">
-    <h2>{{ step.title }}</h2>
-    <div class="step-imgs">
+    <div class="row mb-6">
+      <div class="col-12">
+        <h2>{{ step.title }}</h2>
+      </div>
+    </div>
+
+    {% if step.imgs %}
+    <div class="row mb-3">
       {% for step_img in step.imgs %}
-      <img src="{{ step_img.src }}" alt="{{ step_img.alt }}" />
+        <div class="col-md-3">
+          <img src="{{ step_img.src }}" alt="{{ step_img.alt }}" class="img-fluid" />
+        </div>
       {% endfor %}
     </div>
-    <div class="step-vids">
+    {% endif %}
+
+    {% if step.videos %}
+    <div class="row mb-3">
       {% for step_video in step.videos %}
-      <video src="{{ step_video }}"></video>
+        <div class="col-md-3">
+          <video src="{{ step_video }}" controls class="w-100"></video>
+        </div>
       {% endfor %}
     </div>
-    {{ step.text|safe }}
-  </div>
+    {% endif %}
+
+    {% if step.iframes %}
+    <div class="row mb-3">
+      {% for step_iframe in step.iframes %}
+        <div class="col-md-3 mb-3">
+          <iframe src="{{ step_iframe.src }}" width="100%" height="{{ step_iframe.height }}"></iframe>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if step.downloads %}
+    <div class="row">
+      <div class="col-12">
+        <h3>Downloads</h3>
+      </div>
+      {% for step_download in step.downloads %}
+        <div class="col-md-2 mb-3">
+          <a href="{{ step_download.src }}" class="btn btn-primary">{{ step_download.name }}</a>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+      <div class="col-12 mb-3">
+        {{ step.text|safe }}
+      </div>
+    </div>
   {% endfor %}
+</div>
+
 
     <br />
     {% for index, comment in enumerate(comments) %}

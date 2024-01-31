@@ -141,7 +141,9 @@ def update_data():
             )
 
 
-debugmode = os.environ.get("FLASK_DEBUG", False)
+debugmode = os.environ.get("FLASK_DEBUG", os.environ.get("STRUCTABLES_DEBUG", False))
+invidious = os.environ.get("STRUCTABLES_INVIDIOUS")
+unsafe = os.environ.get("STRUCTABLES_UNSAFE", False)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -164,12 +166,29 @@ if __name__ == "__main__":
         default="127.0.0.1",
         help="Host to listen on",
     )
+    parser.add_argument(
+        "-I",
+        "--invidious",
+        help="URL to Invidious instance, e.g. https://invidious.private.coffee/",
+    )
+    parser.add_argument(
+        "-u",
+        "--unsafe",
+        action="store_true",
+        help="Display iframes regardless of origin",
+    )
     args = parser.parse_args()
 
     if args.debug:
         debugmode = True
 
-print("Loading...")
+    if args.invidious:
+        invidious = args.invidious
+
+    if args.unsafe:
+        unsafe = True
+
+print("Loading initial data...")
 
 update_data()
 
@@ -833,55 +852,93 @@ def route_member(member):
 @app.route("/<article>/")
 def route_article(article):
     try:
-        data = urlopen(f"https://www.instructables.com/{article}/")
+        data = urlopen(
+            f"https://www.instructables.com/json-api/showInstructableModel?urlString={article}"
+        )
+        data = json.loads(data.read().decode())
     except HTTPError as e:
         abort(e.code)
 
-    soup = BeautifulSoup(data.read().decode(), "html.parser")
-
     try:
-        header = soup.select("header")
-        if len(header) < 2 and soup.select("title")[0].text.contains("Pending Review"):
-            return render_template("article-review.html", title="Pending Review")
-        else:
-            header = header[1]
-        title = header.find("h1").text
+        title = data["title"]
+        author = data["author"]["screenName"]
+        author_link = f"/member/{author}"
+        category = data["classifications"][0]["title"]
+        category_slug = data["classifications"][0]["name"]
+        category_link = f"/{category_slug}/"
+        channel = data["classifications"][0]["channels"][0]["title"]
+        channel_slug = data["classifications"][0]["channels"][0]["name"]
+        channel_link = f"/{category_slug}/{channel_slug}/"
 
-        byline = header.select("div.sub-header div.header-byline")[0]
-        author = byline.select("a")[0].text
-        author_link = byline.select("a")[0].get("href")
-        category = byline.select("a")[1].text
-        category_link = byline.select("a")[1].get("href")
-        channel = byline.select("a")[2].text
-        channel_link = byline.select("a")[2].get("href")
+        views = data["views"]
+        favorites = data["favorites"]
 
-        stats = header.select("div.sub-header div.header-stats")[0]
-        views = stats.select(".view-count")[0].text
-        favorites = 0
-        if stats.select(".favorite-count") != []:
-            favorites = stats.select(".favorite-count")[0].text
-
-        if soup.select("div.article-body") != []:
-            ## Instructables
-            body = soup.select("div.article-body")[0]
-
+        if "steps" in data:
             steps = []
-            for step in body.select("section.step"):
-                print(step)
-                step_title = step.select("h2")[0].text
+
+            if "supplies" in data:
+                supplies = data["supplies"]
+
+                supplies_files = []
+
+                if "suppliesFiles" in data:
+                    supplies_files = data["suppliesFiles"]
+
+                data["steps"].insert(
+                    1, {"title": "Supplies", "body": supplies, "files": supplies_files}
+                )
+
+            for step in data["steps"]:
+                step_title = step["title"]
+                print(step_title)
 
                 step_imgs = []
-                # TODO: Handle download links
-                for img in step.select("img"):
-                    step_imgs.append(
-                        {"src": proxy(img.get("src")), "alt": img.get("alt")}
-                    )
+                step_videos = []  # TODO: Check if this is still required
+                step_iframes = []
+                step_downloads = []
 
-                step_videos = []
-                for img in step.select("video"):
-                    step_videos.append([proxy(img.get("src"))])
+                for file in step["files"]:
+                    print(file)
+                    if file["image"] and not "embedType" in file:
+                        step_imgs.append(
+                            {"src": proxy(file["downloadUrl"]), "alt": file["name"]}
+                        )
 
-                step_text = str(step.select("div.step-body")[0])
+                    elif not file["image"]:
+                        step_downloads.append(
+                            {"src": proxy(file["downloadUrl"]), "name": file["name"]}
+                        )
+
+                    else:  # Leaves us with embeds
+                        embed_code = file["embedHtmlCode"]
+
+                        soup = BeautifulSoup(embed_code, "html.parser")
+
+                        iframe = soup.select("iframe")[0]
+
+                        src = iframe.get("src")
+
+                        if src.startswith("https://content.instructables.com"):
+                            src = src.replace(
+                                "https://content.instructables.com",
+                                f"/proxy/?url={src}",
+                            )
+
+                        elif invidious and src.startswith("https://www.youtube.com"):
+                            src = src.replace("https://www.youtube.com", invidious)
+
+                        elif not unsafe:
+                            src = "/iframe/?url=" + quote(src)
+
+                        step_iframes.append(
+                            {
+                                "src": src,
+                                "width": file.get("width"),
+                                "height": file.get("height"),
+                            }
+                        )
+
+                step_text = step["body"]
                 step_text = step_text.replace(
                     "https://content.instructables.com",
                     "/proxy/?url=https://content.instructables.com",
@@ -892,6 +949,8 @@ def route_article(article):
                         "imgs": step_imgs,
                         "text": step_text,
                         "videos": step_videos,
+                        "iframes": step_iframes,
+                        "downloads": step_downloads,
                     }
                 )
 
@@ -955,45 +1014,17 @@ def route_article(article):
         else:
             ## Collections
             thumbnails = []
-            for thumbnail in soup.select("ul#thumbnails-list li"):
-                text = (
-                    link
-                ) = (
-                    img
-                ) = (
-                    thumbnail_title
-                ) = (
-                    thumbnail_author
-                ) = (
-                    thumbnail_author_link
-                ) = thumbnail_channel = thumbnail_channel_link = ""
+            for thumbnail in data["instructables"]:
+                text = thumbnail["title"]
+                link = thumbnail["showUrl"]
+                img = proxy(thumbnail["downloadUrl"])
+                thumbnail_title = thumbnail["title"]
+                thumbnail_author = thumbnail["author"]["screenName"]
+                thumbnail_author_link = f"/member/{thumbnail_author}"
+                thumbnail_channel = thumbnail["classifications"][0]["channels"][0]["title"]
+                thumbnail_category = thumbnail["classifications"][0]["title"]
+                thumbnail_channel_link = f"/{thumbnail_category}/{thumbnail_channel}"
 
-                if thumbnail.select("div.thumbnail > p") != []:
-                    text = thumbnail.select("div.thumbnail > p")[0]
-                if thumbnail.select("div.thumbnail div.thumbnail-image"):
-                    link = thumbnail.select("div.thumbnail div.thumbnail-image a")[
-                        0
-                    ].get("href")
-                    img = proxy(
-                        thumbnail.select("div.thumbnail div.thumbnail-image a img")[
-                            0
-                        ].get("src")
-                    )
-                    thumbnail_title = thumbnail.select(
-                        "div.thumbnail div.thumbnail-info h3.title a"
-                    )[0].text
-                    thumbnail_author = thumbnail.select(
-                        "div.thumbnail div.thumbnail-info span.author a"
-                    )[0].text
-                    thumbnail_author_link = thumbnail.select(
-                        "div.thumbnail div.thumbnail-info span.author a"
-                    )[0].get("href")
-                    thumbnail_channel = thumbnail.select(
-                        "div.thumbnail div.thumbnail-info span.origin a"
-                    )[0].text
-                    thumbnail_channel_link = thumbnail.select(
-                        "div.thumbnail div.thumbnail-info span.origin a"
-                    )[0].get("href")
                 thumbnails.append(
                     {
                         "text": text,
@@ -1006,6 +1037,8 @@ def route_article(article):
                         "channel_link": thumbnail_channel_link,
                     }
                 )
+
+                print(thumbnails[-1])
 
             return render_template(
                 "collection.html",
@@ -1097,9 +1130,30 @@ def route_proxy():
             except HTTPError as e:
                 abort(e.code)
 
-            return Response(data.read(), content_type=data.headers["content-type"])
+            content_disposition = data.headers.get("content-disposition")
+
+            headers = {}
+
+            if content_disposition:
+                headers["Content-Disposition"] = content_disposition
+
+            return Response(
+                data.read(),
+                headers=headers,
+                content_type=data.headers["content-type"],
+            )
         else:
             raise BadRequest()
+    else:
+        raise BadRequest()
+
+
+@app.route("/iframe/")
+def route_iframe():
+    url = request.args.get("url")
+    url = unquote(url)
+    if url != None:
+        return render_template("iframe.html", url=url)
     else:
         raise BadRequest()
 
