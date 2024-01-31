@@ -27,6 +27,18 @@
         <p>{{ ible.views }} Views, {{ ible.favorites }} Favorites</p>
       </div>
       {% endfor %}
+
+      <ul class="pagination">
+        {% for page in pagination %}
+        <li class="page-item">
+          <a
+            class="page-link {% if page.active %}active{% endif %} {% if page.disabled %}disabled{% endif %}"
+            href="{{ page.link }}"
+            >{{ page.text }}</a
+          >
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </center>

@@ -1,42 +1,73 @@
 {% extends "base.html" %}
-
 {% block content %}
-	<center>
-		<h1>{{ title }}</h1>
-		<div class="channel-list">
-			{% for channel in channels %}
-			<div style="display:inline-block">
-				<a href="{{ channel.link }}" style="position:relative;text-align:center;color:white;">
-					<img src="{{ channel.img }}" alt="{{ channel.title }}" style="display:inline-block;max-width:200px;">
-					<p style="position:absolute;bottom:0px;left:4px;font-weight:thin;">{{ channel.title }}</p>
-				</a>
-			</div>
-			{% endfor %}
-		</div>
-		<h2><a href="{{ path }}projects/">Featured Projects</a></h2>
-		<div class="project-list">
-			{% for ible in ibles %}
-			<div class="ible-list-item">
-				<a href="{{ ible.link }}">
-					<img src="{{ ible.img }}" alt="{{ ible.title }}">
-					<br>
-					<span><b>{{ ible.title }}</b></span>
-				</a>
-				<span>by <a href="{{ ible.author_link }}">{{ ible.author }}</a></span>
-				<span>in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a></span>
-				<br>
-				<span>{{ ible.views }} Views&nbsp;&nbsp;</span>
-				<span>{{ ible.favorites }} Favorites</span>
-			</div>
-			{% endfor %}
-		</div>
-		<h2><a href="/contest/">Contests</a></h2>
-		<div style="display:inline-block;">
-			{% for contest in contests %}
-			<a href="{{ contest.link }}" style="color:#bbc2cf;">
-				<img src="{{ contest.img }}" alt="{{ contest.title }}" style="max-width:400px;">
-			</a>
-			{% endfor %}
-		</div>
-	</center>
+<div class="container">
+  <h1 class="text-center">{{ title }}</h1>
+  <div class="row">
+    {% for channel in channels %}
+    <div class="col-6 col-md-4 col-lg-3 text-center mb-3">
+      <a href="/{{ channel }}" class="btn btn-primary d-block position-relative">
+        {{ channel }}
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <h2 class="text-center">
+    <a href="{{ path }}projects/">Featured Projects</a>
+  </h2>
+  <div class="row">
+    {% for ible in ibles %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+      <div class="card">
+        <a href="{{ ible.link }}" class="text-dark text-decoration-none">
+          <img
+            src="{{ ible.img }}"
+            alt="{{ ible.title }}"
+            class="card-img-top"
+          />
+          <div class="card-body">
+            <h5 class="card-title">{{ ible.title }}</h5>
+            <p class="card-text">
+              <small class="text-muted"
+                >by
+                <a href="{{ ible.author_link }}" class="text-primary"
+                  >{{ ible.author }}</a
+                ></small
+              >
+              <br />
+              <small class="text-muted"
+                >in
+                <a href="{{ ible.channel_link }}" class="text-primary"
+                  >{{ ible.channel }}</a
+                ></small
+              >
+              <br />
+              <small class="text-muted">{{ ible.views }} Views</small>
+              <br />
+              <small class="text-muted">{{ ible.favorites }} Favorites</small>
+            </p>
+          </div>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Doesn't seem to be current
+  <h2 class="text-center"><a href="/contest/">Contests</a></h2>
+  <div class="row">
+    <div class="col">
+      {% for contest in contests %}
+      <a href="{{ contest.link }}">
+        <img
+          src="{{ contest.img }}"
+          alt="{{ contest.title }}"
+          class="img-fluid"
+        />
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+  -->
+</div>
 {% endblock %}

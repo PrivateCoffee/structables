@@ -9,7 +9,7 @@ from flask import (
     stream_with_context,
 )
 
-from urllib.parse import quote, unquote
+from urllib.parse import quote, unquote, urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from traceback import print_exc
@@ -61,9 +61,12 @@ def projects_search(
     query="*",
     category="",
     channel="",
-    filter_by="featureFlag:=true",
+    filter_by="",
     page=1,
     per_page=50,
+    query_by="title,stepBody,screenName",
+    sort_by="publishDate:desc",
+    timeout=5,
 ):
     if category:
         if filter_by:
@@ -78,21 +81,36 @@ def projects_search(
     query = quote(query)
     filter_by = quote(filter_by)
 
-    logging.debug(f"Searching projects with query {query} and filter {filter_by}")
+    logging.debug(
+        f"Searching projects with query {query} and filter {filter_by}, page {page}"
+    )
 
     projects_headers = {"x-typesense-api-key": TYPESENSE_API_KEY}
+
+    request_args = {
+        "q": query,
+        "query_by": query_by,
+        "page": page,
+        "sort_by": sort_by,
+        "include_fields": "title,urlString,coverImageUrl,screenName,favorites,views,primaryClassification,featureFlag,prizeLevel,IMadeItCount",
+        "filter_by": filter_by,
+        "per_page": per_page,
+    }
+
+    args_str = "&".join([f"{key}={value}" for key, value in request_args.items()])
+
     projects_request = Request(
-        f"https://www.instructables.com/api_proxy/search/collections/projects/documents/search?q={query}&query_by=title,stepBody,screenName&page={page}&sort_by=publishDate:desc&include_fields=title,urlString,coverImageUrl,screenName,favorites,views,primaryClassification,featureFlag,prizeLevel,IMadeItCount&filter_by={filter_by}&per_page={per_page}",
+        f"https://www.instructables.com/api_proxy/search/collections/projects/documents/search?{args_str}",
         headers=projects_headers,
     )
 
-    projects_data = urlopen(projects_request)
+    projects_data = urlopen(projects_request, timeout=timeout)
     project_obj = json.loads(projects_data.read().decode())
     project_ibles = project_obj["hits"]
 
     logging.debug(f"Got {len(project_ibles)} projects")
 
-    return project_ibles
+    return project_ibles, project_obj["out_of"]
 
 
 def update_data():
@@ -109,7 +127,7 @@ def update_data():
         channels.append(group.select("h2 a")[0].text.lower())
 
     global_ibles["/projects"] = []
-    project_ibles = projects_search()
+    project_ibles, total = projects_search(filter_by="featureFlag:=true")
 
     while len(global_ibles["/projects"]) <= 0:
         for ible in project_ibles:
@@ -308,47 +326,36 @@ def member_header(header):
     }
 
 
-def category_page(path, name, teachers=False):
-    # TODO: Figure out why this doesn't work - probably using the search function would help...
-
-    try:
-        data = urlopen("https://www.instructables.com" + path)
-    except HTTPError as e:
-        abort(e.code)
-
-    soup = BeautifulSoup(data.read().decode(), "html.parser")
-
-    channels = []
-    for card in soup.select("div.scrollable-cards-inner div.scrollable-card"):
-        link = card.a["href"]
-        img = proxy(
-            card.select(f"a{' noscript' if teachers else ''} img")[0].get("src")
-        )
-        title = card.select("a img")[0].get("alt")
-
-        channels.append({"link": link, "title": title, "img": img})
+def category_page(name, teachers=False):
+    path = urlparse(request.path).path
+    page = request.args.get("page", 1, type=int)
 
     ibles = []
-    for ible in soup.select(
-        "div.category-landing-projects-list div.category-landing-projects-ible"
-    ):
-        link = ible.a["href"]
-        img = proxy(ible.select("a noscript img")[0].get("src"))
 
-        info = ible.select("div.category-landing-projects-ible-info")[0]
-        title = info.select("a.ible-title")[0].text
-        author = info.select("span.ible-author a")[0].text
-        author_link = info.select("span.ible-author a")[0].get("href")
-        channel = info.select("span.ible-channel a")[0].text
-        channel_link = info.select("span.ible-channel a")[0].get("href")
+    channels = []
+    contests = []
 
-        stats = ible.select("span.ible-stats-right-col")[0]
-        views = 0
-        if stats.select("span.ible-views") != []:
-            views = stats.select("span.ible-views")[0].text
-        favorites = 0
-        if stats.select("span.ible-favorites") != []:
-            favorites = stats.select("span.ible-favorites")[0].text
+    for channel in global_ibles["/projects"]:
+        if channel["channel"].startswith(name.lower()) and channel["channel"] not in channels:
+            channels.append(channel["channel"])
+
+    category_ibles, total = projects_search(
+        category=name, page=page, filter_by="featureFlag:=true"
+    )
+
+    for ible in category_ibles:
+        link = f"/{ible['document']['urlString']}"
+        img = proxy(ible["document"]["coverImageUrl"])
+
+        title = ible["document"]["title"]
+        author = ible["document"]["screenName"]
+        author_link = f"/member/{author}"
+
+        channel = ible["document"]["primaryClassification"]
+        channel_link = f"/channel/{channel}"
+
+        views = ible["document"]["views"]
+        favorites = ible["document"]["favorites"]
 
         ibles.append(
             {
@@ -364,19 +371,9 @@ def category_page(path, name, teachers=False):
             }
         )
 
-    contests = []
-    for contest in soup.select(
-        "div.category-landing-contests-list div.category-landing-contests-item"
-    ):
-        link = contest.a["href"]
-        img = proxy(contest.select("a noscript img")[0].get("src"))
-        title = contest.select("a img")[0].get("alt")
-
-        contests.append({"link": link, "img": img, "title": title})
-
     return render_template(
         "category.html",
-        name=name,
+        title=name,
         channels=channels,
         ibles=ibles,
         contests=contests,
@@ -384,26 +381,96 @@ def category_page(path, name, teachers=False):
     )
 
 
-def project_list(path, head, sort=""):
+def get_pagination(request, total, per_page=1):
+    pagination = []
+
+    args = request.args.copy()
+    current = int(args.pop("page", 1))
+
+    query_string = urlencode(args)
+
+    total_pages = int(total / per_page)
+
+    if query_string:
+        query_string = "&" + query_string
+
+    if current > 1:
+        pagination.append(
+            {
+                "link": f"?page={current - 1}{query_string}",
+                "text": "Previous",
+                "disabled": False,
+                "active": False,
+            }
+        )
+
+    for page in range(max(current - 5, 1), min(current + 5, total_pages)):
+        if page == current:
+            pagination.append(
+                {
+                    "link": f"?page={page}{query_string}",
+                    "text": page,
+                    "disabled": False,
+                    "active": True,
+                }
+            )
+        else:
+            pagination.append(
+                {
+                    "link": f"?page={page}{query_string}",
+                    "text": page,
+                    "disabled": False,
+                    "active": False,
+                }
+            )
+
+    if current < total_pages:
+        pagination.append(
+            {
+                "link": f"?page={current + 1}{query_string}",
+                "text": "Next",
+                "disabled": False,
+                "active": False,
+            }
+        )
+
+    return pagination
+
+
+def project_list(head, sort="", per_page=20):
     head = f"{head + ' ' if head != '' else ''}Projects" + sort
-    path = urlparse(path).path
+    path = urlparse(request.path).path
+
+    page = request.args.get("page", 1, type=int)
 
     if path in ("/projects/", "/projects"):
         ibles = global_ibles["/projects"]
     else:
-        if not "projects" in path.split("/"):
+        if "projects" in path.split("/"):
+            ibles = []
+
+            parts = path.split("/")
+            category = parts[1]
+            channel = "" if parts[2] == "projects" else parts[2]
+
+            project_ibles, total = projects_search(
+                category=category, channel=channel, per_page=per_page, page=page
+            )
+
+        elif "search" in path.split("/"):
+            ibles = []
+            query = request.args.get("q")
+
+            project_ibles, total = projects_search(
+                query=query,
+                filter_by="",
+                per_page=per_page,
+                page=page,
+                query_by="title,screenName",
+            )
+
+        else:
             abort(404)
-
-        ibles = []
-
-        parts = path.split("/")
-
-        category = parts[1]
-        channel = "" if parts[2] == "projects" else parts[2]
-
-        # TODO: Add pagination, popular, etc.
-
-        project_ibles = projects_search(category=category, channel=channel)
 
         for ible in project_ibles:
             link = f"/{ible['document']['urlString']}"
@@ -433,11 +500,13 @@ def project_list(path, head, sort=""):
                 }
             )
 
-            if len(ibles) >= 8:
-                break
-
-    print(ibles)
-    return render_template("projects.html", title=head, ibles=ibles, path=path)
+    return render_template(
+        "projects.html",
+        title=head,
+        ibles=ibles,
+        path=path,
+        pagination=get_pagination(request, total, per_page),
+    )
 
 
 @app.route("/sitemap/")
@@ -654,13 +723,12 @@ def route_contests():
 
 @app.route("/<category>/<channel>/projects/")
 def route_channel_projects(category, channel):
-    return project_list(f"/{category}/{channel}/projects/", channel.title())
+    return project_list(channel.title())
 
 
 @app.route("/<category>/<channel>/projects/<sort>/")
 def route_channel_projects_sort(category, channel, sort):
     return project_list(
-        f"/{category}/{channel}/projects/{sort}",
         channel.title(),
         " Sorted by " + sort.title(),
     )
@@ -668,72 +736,62 @@ def route_channel_projects_sort(category, channel, sort):
 
 @app.route("/<category>/projects/")
 def route_category_projects(category):
-    return project_list(f"/{category}/projects/", category.title())
+    return project_list(category.title())
 
 
 @app.route("/<category>/projects/<sort>/")
 def route_category_projects_sort(category, sort):
-    return project_list(
-        f"/{category}/projects/{sort}", category.title(), " Sorted by " + sort.title()
-    )
+    return project_list(category.title(), " Sorted by " + sort.title())
 
 
 @app.route("/projects/")
 def route_projects():
-    return project_list("/projects/", "")
+    return project_list("")
 
 
 @app.route("/search")
 def route_search():
-    # TODO: Fix this (using search function)
-    return project_list("/search/?q=" + request.args["q"] + "&projects=all", "Search")
+    return project_list("Search")
 
 
 @app.route("/projects/<sort>/")
 def route_projects_sort(sort):
-    return project_list(f"/projects/{sort}", "", " Sorted by " + sort.title())
+    return project_list("", " Sorted by " + sort.title())
 
 
 @app.route("/circuits/")
 def route_circuits():
-    return category_page("/circuits/", "Circuits")
+    return category_page("Circuits")
 
 
 @app.route("/workshop/")
 def route_workshop():
-    return category_page("/workshop/", "Workshop")
+    return category_page("Workshop")
 
 
 @app.route("/craft/")
 def route_craft():
-    return category_page("/craft/", "Craft")
+    return category_page("Craft")
 
 
 @app.route("/cooking/")
 def route_cooking():
-    return category_page("/cooking/", "Cooking")
+    return category_page("Cooking")
 
 
 @app.route("/living/")
 def route_living():
-    return category_page("/living/", "Living")
+    return category_page("Living")
 
 
 @app.route("/outside/")
 def route_outside():
-    return category_page("/outside/", "Outside")
+    return category_page("Outside")
 
 
 @app.route("/teachers/")
 def route_teachers():
-    return category_page("/teachers/", "Teachers", True)
-
-
-@app.route("/sitemap/projects/<category>/<subcategory>")
-def route_sitemap_circuits(category, subcategory):
-    return category_page(
-        "/" + category + "/" + subcategory, subcategory + " - " + category
-    )
+    return category_page("Teachers", True)
 
 
 @app.route("/member/<member>/instructables/")
@@ -1021,7 +1079,9 @@ def route_article(article):
                 thumbnail_title = thumbnail["title"]
                 thumbnail_author = thumbnail["author"]["screenName"]
                 thumbnail_author_link = f"/member/{thumbnail_author}"
-                thumbnail_channel = thumbnail["classifications"][0]["channels"][0]["title"]
+                thumbnail_channel = thumbnail["classifications"][0]["channels"][0][
+                    "title"
+                ]
                 thumbnail_category = thumbnail["classifications"][0]["title"]
                 thumbnail_channel_link = f"/{thumbnail_category}/{thumbnail_channel}"
 
