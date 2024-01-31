@@ -21,7 +21,7 @@
     </div>
 
     {% if step.imgs %}
-    <div class="row mb-3">
+    <div class="row mb-3 justify-content-center">
       {% for step_img in step.imgs %}
         <div class="col-md-3">
           <img src="{{ step_img.src }}" alt="{{ step_img.alt }}" class="img-fluid" />
@@ -31,7 +31,7 @@
     {% endif %}
 
     {% if step.videos %}
-    <div class="row mb-3">
+    <div class="row mb-3 justify-content-center">
       {% for step_video in step.videos %}
         <div class="col-md-3">
           <video src="{{ step_video }}" controls class="w-100"></video>
@@ -41,7 +41,7 @@
     {% endif %}
 
     {% if step.iframes %}
-    <div class="row mb-3">
+    <div class="row mb-3 justify-content-center">
       {% for step_iframe in step.iframes %}
         <div class="col-md-3 mb-3">
           <iframe src="{{ step_iframe.src }}" width="100%" height="{{ step_iframe.height }}"></iframe>
@@ -64,7 +64,7 @@
     {% endif %}
 
     <div class="row">
-      <div class="col-12 mb-3">
+      <div class="col-12 mb-3 wrap">
         {{ step.text|safe }}
       </div>
     </div>
