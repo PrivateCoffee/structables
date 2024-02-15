@@ -7,21 +7,15 @@ An open source alternative front-end to Instructables. This is a fork of <a href
     <li>
         <a href="https://matrix.private.cf/#/#structables:private.coffee">Private.coffee Matrix Room</a>
     </li>
-    <li>
-        <a href="https://matrix.to/#/#indestructables:fedora.im">snowcatridge10's Matrix Room</a>
-    </li>
-    <li>
-        <a href="https://mto.vern.cc/#/%23cobra-frontends:vern.cc">Cobra's Matrix Room</a>
-    </li>
 </ul>
 
 </div>
 
 # Instances
 
-| URL                                                                                | Provided by                               | Country | Comments |
-| ---------------------------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
-| [https://structables.private.coffee/](https://structables.private.coffee/)         | [Private.coffee](https://private.coffee/) | Austria |          |
+| URL                                                                        | Provided by                               | Country | Comments |
+| -------------------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
+| [https://structables.private.coffee/](https://structables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
 
 # Run your own instance
 
