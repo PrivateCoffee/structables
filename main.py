@@ -957,7 +957,7 @@ def route_article(article):
 
                 for file in step["files"]:
                     print(file)
-                    if file["image"] and not "embedType" in file:
+                    if file["image"] and not "embedType" in "file":
                         step_imgs.append(
                             {"src": proxy(file["downloadUrl"]), "alt": file["name"]}
                         )
@@ -969,7 +969,6 @@ def route_article(article):
 
                     else:  # Leaves us with embeds
                         embed_code = file["embedHtmlCode"]
-
                         soup = BeautifulSoup(embed_code, "html.parser")
 
                         iframe = soup.select("iframe")[0]
