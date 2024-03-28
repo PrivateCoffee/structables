@@ -205,3 +205,7 @@ header {
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
+
+.navbar-logo {
+  height: 64px;
+}
