@@ -448,6 +448,7 @@ def project_list(head, sort="", per_page=20):
 
     if path in ("/projects/", "/projects"):
         ibles = global_ibles["/projects"]
+        total = len(ibles)
     else:
         if "projects" in path.split("/"):
             ibles = []
