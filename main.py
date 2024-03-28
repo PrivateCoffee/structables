@@ -336,7 +336,10 @@ def category_page(name, teachers=False):
     contests = []
 
     for channel in global_ibles["/projects"]:
-        if channel["channel"].startswith(name.lower()) and channel["channel"] not in channels:
+        if (
+            channel["channel"].startswith(name.lower())
+            and channel["channel"] not in channels
+        ):
             channels.append(channel["channel"])
 
     category_ibles, total = projects_search(
@@ -459,7 +462,9 @@ def project_list(head, sort="", per_page=20):
 
         elif "search" in path.split("/"):
             ibles = []
-            query = request.args.get("q")
+            query = (
+                request.args.get("q") if request.method == "GET" else request.form["q"]
+            )
 
             project_ibles, total = projects_search(
                 query=query,
@@ -749,7 +754,7 @@ def route_projects():
     return project_list("")
 
 
-@app.route("/search")
+@app.route("/search", methods=["POST", "GET"])
 def route_search():
     return project_list("Search")
 
