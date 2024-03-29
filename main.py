@@ -1186,27 +1186,31 @@ def route_explore():
 @app.route("/proxy/")
 def route_proxy():
     url = request.args.get("url")
-    if url != None:
+    if url is not None:
         if url.startswith("https://cdn.instructables.com/") or url.startswith(
             "https://content.instructables.com/"
         ):
+            def generate():
+                # Subfunction to allow streaming the data instead of 
+                # downloading all of it at once
+                try:
+                    with urlopen(unquote(url)) as data:
+                        while True:
+                            chunk = data.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            yield chunk
+                except HTTPError as e:
+                    abort(e.code)
             try:
-                data = urlopen(unquote(url))
+                with urlopen(unquote(url)) as data:
+                    content_type = data.headers["content-type"]
             except HTTPError as e:
                 abort(e.code)
+            except KeyError:
+                raise InternalServerError()
 
-            content_disposition = data.headers.get("content-disposition")
-
-            headers = {}
-
-            if content_disposition:
-                headers["Content-Disposition"] = content_disposition
-
-            return Response(
-                data.read(),
-                headers=headers,
-                content_type=data.headers["content-type"],
-            )
+            return Response(generate(), content_type=content_type)
         else:
             raise BadRequest()
     else:
