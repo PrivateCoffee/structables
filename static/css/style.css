@@ -73,6 +73,20 @@ blockquote {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  flex: 1;
+  padding: 1rem;
+}
+
+.card-footer {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ddd;
+  margin-top: auto;
 }
 
 .card-img-top {
