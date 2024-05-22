@@ -1,11 +1,13 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="container">
   <h1 class="text-center">{{ title }}</h1>
   <div class="row">
     {% for channel in channels %}
     <div class="col-6 col-md-4 col-lg-3 text-center mb-3">
-      <a href="/{{ channel }}" class="btn btn-primary d-block position-relative">
+      <a
+        href="/{{ channel }}"
+        class="btn btn-primary d-block position-relative"
+      >
         {{ channel }}
       </a>
     </div>
@@ -17,37 +19,30 @@
   </h2>
   <div class="row">
     {% for ible in ibles %}
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-      <div class="card">
-        <a href="{{ ible.link }}" class="text-dark text-decoration-none">
+    <div class="col-xs-12 col-sm-6 col-lg-4 mb-4">
+      <div class="card h-100 d-flex flex-column">
+        <a href="{{ ible.link }}">
           <img
-            src="{{ ible.img }}"
-            alt="{{ ible.title }}"
             class="card-img-top"
+            src="{{ ible.img }}"
+            alt="{{ ible.alt }}"
+            style="max-width: 100%"
           />
           <div class="card-body">
             <h5 class="card-title">{{ ible.title }}</h5>
-            <p class="card-text">
-              <small class="text-muted"
-                >by
-                <a href="{{ ible.author_link }}" class="text-primary"
-                  >{{ ible.author }}</a
-                ></small
-              >
-              <br />
-              <small class="text-muted"
-                >in
-                <a href="{{ ible.channel_link }}" class="text-primary"
-                  >{{ ible.channel }}</a
-                ></small
-              >
-              <br />
-              <small class="text-muted">{{ ible.views }} Views</small>
-              <br />
-              <small class="text-muted">{{ ible.favorites }} Favorites</small>
-            </p>
           </div>
         </a>
+        <div class="card-footer mt-auto">
+          <p class="card-text">
+            by <a href="{{ ible.author_link }}">{{ ible.author }}</a>
+          </p>
+          <p class="card-text">
+            in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
+          </p>
+          <p class="card-text">
+            {{ ible.favorites }} Favorites, {{ ible.views }} Views
+          </p>
+        </div>
       </div>
     </div>
     {% endfor %}

@@ -11,20 +11,31 @@
   <div class="container">
     <div class="row">
       {% for ible in ibles %}
-      <div class="ible-list-item col-xs-12 col-sm-6 col-lg-4">
-        <a href="{{ ible.link }}" style="color: #bbc2cf">
-          <img
-            style="max-width: 350px"
-            src="{{ ible.img }}"
-            alt="{{ ible.title }}"
-          />
-          <p>{{ ible.title }}</p>
-        </a>
-        <p>
-          by <a href="{{ ible.author_link }}">{{ ible.author }}</a> in
-          <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
-        </p>
-        <p>{{ ible.views }} Views, {{ ible.favorites }} Favorites</p>
+      <div class="col-xs-12 col-sm-6 col-lg-4 mb-4">
+        <div class="card h-100 d-flex flex-column">
+          <a href="{{ ible.link }}">
+            <img
+              class="card-img-top"
+              src="{{ ible.img }}"
+              alt="{{ ible.alt }}"
+              style="max-width: 100%"
+            />
+            <div class="card-body">
+              <h5 class="card-title">{{ ible.title }}</h5>
+            </div>
+          </a>
+          <div class="card-footer mt-auto">
+            <p class="card-text">
+              by <a href="{{ ible.author_link }}">{{ ible.author }}</a>
+            </p>
+            <p class="card-text">
+              in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
+            </p>
+            <p class="card-text">
+              {{ ible.favorites }} Favorites, {{ ible.views }} Views
+            </p>
+          </div>
+        </div>
       </div>
       {% endfor %}
 
