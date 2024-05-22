@@ -6,16 +6,14 @@ from flask import (
     request,
     redirect,
     Response,
-    stream_with_context,
 )
 
 from urllib.parse import quote, unquote, urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from traceback import print_exc
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from argparse import ArgumentParser
-from configparser import ConfigParser
 
 from werkzeug.exceptions import BadRequest, abort, InternalServerError, NotFound
 from bs4 import BeautifulSoup
@@ -122,7 +120,6 @@ def update_data():
     sitemap_soup = BeautifulSoup(sitemap_data.read().decode(), "html.parser")
     main = sitemap_soup.select("div.sitemap-content")[0]
 
-    groups = []
     for group in main.select("div.group-section"):
         channels.append(group.select("h2 a")[0].text.lower())
 
@@ -266,7 +263,7 @@ def member_header(header):
         0
     ].text
 
-    profile_top = header.select("div.profile-top")[0]
+    header.select("div.profile-top")[0]
 
     # stats_text = profile_top.select("div.profile-header-stats")[0]
     # stats_num = header.select("div.profile-top div.profile-header-stats")[1]
@@ -556,7 +553,7 @@ def route_sitemap(path=""):
 @app.route("/contest/archive/")
 def route_contest_archive():
     page = 1
-    if request.args.get("page") != None:
+    if request.args.get("page") is not None:
         page = request.args.get("page")
 
     try:
@@ -624,7 +621,7 @@ def route_contest(contest):
     info.select("div#contest-body-nav")[0].decompose()
     info = str(info).replace("https://www.instructables.com", "/")
 
-    entries = body.select("span.contest-entity-count")[0].text
+    body.select("span.contest-entity-count")[0].text
 
     entry_list = []
     for entry in body.select("div.contest-entries-list div.contest-entries-list-ible"):
@@ -963,7 +960,7 @@ def route_article(article):
 
                 for file in step["files"]:
                     print(file)
-                    if file["image"] and not "embedType" in "file":
+                    if file["image"] and "embedType" not in "file":
                         step_imgs.append(
                             {"src": proxy(file["downloadUrl"]), "alt": file["name"]}
                         )
@@ -1221,7 +1218,7 @@ def route_proxy():
 def route_iframe():
     url = request.args.get("url")
     url = unquote(url)
-    if url != None:
+    if url is not None:
         return render_template("iframe.html", url=url)
     else:
         raise BadRequest()
@@ -1234,7 +1231,7 @@ def privacypolicy():
     try:
         with (pathlib.Path(__file__).parent / "privacy.txt").open() as f:
             content = f.read()
-    except:
+    except OSError:
         pass
 
     return render_template(
