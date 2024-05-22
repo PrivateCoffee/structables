@@ -1,20 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-	<title>{% if title %}{{ title }} - {% endif %}Structables</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - {% endif %}Structables</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
-	<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/bootstrap.min.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
 </head>
 
 <body>
-	{% include "header.html" %}
-    {% block content %}
-    {% endblock %}
-	{% include "footer.html" %}
+    {% include "header.html" %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    {% include "footer.html" %}
 </body>
 
 </html>
