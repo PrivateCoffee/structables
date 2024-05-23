@@ -1,44 +1,44 @@
-<div align="center">
-<img src="static/img/logo.png">
-<h1>Structables</h1>
+<img align="right" src="src/structables/static/img/logo.png">
+
+# Structables
+
 An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to get rid of Selenium. Indestructables itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
 
-<ul>
-    <li>
-        <a href="https://matrix.private.cf/#/#structables:private.coffee">Private.coffee Matrix Room</a>
-    </li>
-</ul>
+[![Support Private.coffee!](https://shields.private.coffee/badge/private.coffee-support%20us!-pink?logo=coffeescript)](https://private.coffee)
+[![Matrix](https://shields.private.coffee/badge/Matrix-join%20us!-blue?logo=matrix)](https://matrix.to/#/#structables:private.coffee)
+[![PyPI](https://shields.private.coffee/pypi/v/structables)](https://pypi.org/project/structables/)
+[![PyPI - Python Version](https://shields.private.coffee/pypi/pyversions/structables)](https://pypi.org/project/structables/)
+[![PyPI - License](https://shields.private.coffee/pypi/l/structables)](https://pypi.org/project/structables/)
+[![Latest Git Commit](https://shields.private.coffee/gitea/last-commit/privatecoffee/structables?gitea_url=https://git.private.coffee)](https://git.private.coffee/privatecoffee/structables)
 
-</div>
-
-# Instances
+## Instances
 
 | URL                                                                        | Provided by                               | Country | Comments |
 | -------------------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
 | [https://structables.private.coffee/](https://structables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
 
-# Run your own instance
+To add your own instance to this list, please open a pull request or issue.
 
-## Dependencies
+## Run your own instance
 
-First, create a virtual environment with `python3 -m venv venv` and activate it with `source venv/bin/activate`. Then, install the dependencies with:
+### Production
 
-`pip3 install -r requirements.txt`.
+1. Create a virtual environment: `python3 -m venv venv`
+2. Activate the virtual environment: `source venv/bin/activate`
+3. Install the packages: `pip install structables uwsgi`
+4. Run `uwsgi --plugin python3 --http-socket 0.0.0.0:8002 --module structables.main:app --processes 4 --threads 4`
+5. Point your reverse proxy to http://localhost:8002 and (optionally) serve static files from the `venv/lib/pythonX.XX/site-packages/structables/static` directory
+6. Connect to your instance under your domain
 
-For the production environment, you also need the uWSGI Python3 plugin. On Debian, it can be installed via `apt install uwsgi-plugin-python3`
+### Development
 
-## Production
-
-1. Clone the repository
-2. Run `uwsgi --plugin python3 --http-socket 0.0.0.0:8002 --wsgi-file main.py --callable app --processes 4 --threads 2`
-3. Point your reverse proxy to http://localhost:8002
-
-## Development
-
-1. Clone the repository
-2. Run `python3 main.py`
-3. Connect to http://localhost:8002
+1. Clone the repository: `git clone https://git.private.coffee/privatecoffee/structables.git && cd structables`
+2. Create a virtual environment: `python3 -m venv venv`
+3. Activate the virtual environment: `source venv/bin/activate`
+4. Install in editable mode: `pip install -e .`
+5. Run `structables`
+6. Connect to http://localhost:8002
 
 ## License
 
-This project, as well as the two projects it is based on, are licensed under the GNU Affero General Public License v3. See the LICENSE file for more information.
+This project, as well as the two projects it is based on, are licensed under the GNU Affero General Public License v3. See the [LICENSE](LICENSE) file for more information.
