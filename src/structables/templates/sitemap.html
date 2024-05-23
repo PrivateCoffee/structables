@@ -1,23 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<center>
-		<h1>Sitemap</h1>
-		<div class="container">
-			<div class="row sitemap-groups"></div>
-			{% for group in groups %}
-			<div class="sitemap-group col-xs-12 col-sm-6 col-lg-4">
-				<a href="{{ group[1] }}">
-					<h2>{{ group[0] }}</h2>
-				</a>
-				<ul>
-					{% for channel in group[2] %}
-					<li><a href="{{ channel[1] }}">{{ channel[0] }}</a></li>
-					{% endfor %}
-				</ul>
-			</div>
-			{% endfor %}
-		</div>
-		</div>
-	</center>
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1>Sitemap</h1>
+    </div>
+    <div class="row">
+        {% for group in groups %}
+        <div class="sitemap-group col-xs-12 col-sm-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        <a href="{{ group[1] }}" class="text-decoration-none">{{ group[0] }}</a>
+                    </h2>
+                    <ul class="list-unstyled">
+                        {% for channel in group[2] %}
+                        <li><a href="{{ channel[1] }}" class="text-decoration-none">{{ channel[0] }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
