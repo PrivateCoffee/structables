@@ -141,15 +141,28 @@ blockquote {
   line-height: 1em;
 }
 
-.step-imgs {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+.step-section {
+  background-color: var(--primary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  padding: 1.5rem;
 }
 
-.step-imgs img {
-  max-width: 300px;
+.step-header h2 {
+  font-size: 2em;
+  color: var(--heading-color);
+}
+
+.step-images img,
+.step-videos video,
+.step-iframes iframe {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.step-text {
+  font-size: 1.1em;
 }
 
 .reply-button,
@@ -288,4 +301,23 @@ header {
 
 .navbar-logo {
   height: 64px;
+}
+
+.img-fluid {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+video {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+iframe {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-muted {
+  color: #6c757d !important;
 }
