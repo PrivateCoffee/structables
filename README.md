@@ -5,7 +5,7 @@
 An open source alternative front-end to Instructables. This is a fork of <a href="https://codeberg.org/indestructables/indestructables">snowcatridge10's Indestructables</a> to get rid of Selenium. Indestructables itself is a fork of <a href="https://git.vern.cc/cobra/Destructables">Cobra's Destructables</a>.
 
 [![Support Private.coffee!](https://shields.private.coffee/badge/private.coffee-support%20us!-pink?logo=coffeescript)](https://private.coffee)
-[![Matrix](https://shields.private.coffee/badge/Matrix-join%20us!-blue?logo=matrix)](https://matrix.to/#/#structables:private.coffee)
+[![Matrix](https://shields.private.coffee/badge/Matrix-join%20us!-blue?logo=matrix)](https://matrix.pcof.fi/#/#structables:private.coffee)
 [![PyPI](https://shields.private.coffee/pypi/v/structables)](https://pypi.org/project/structables/)
 [![PyPI - Python Version](https://shields.private.coffee/pypi/pyversions/structables)](https://pypi.org/project/structables/)
 [![PyPI - License](https://shields.private.coffee/pypi/l/structables)](https://pypi.org/project/structables/)
@@ -18,6 +18,12 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 | [https://structables.private.coffee/](https://structables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
 
 To add your own instance to this list, please open a pull request or issue.
+
+## Opening Issues
+
+If you're having problems using Structables, or if you have ideas or feedback for us, feel free to open an issue in the [Private.coffee Git](https://git.private.coffee/PrivateCoffee/structables/issues) or on [Github](https://github.com/PrivateCoffee/structables/issues).
+
+Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structables:private.coffee) to discuss your ideas with us.
 
 ## Run your own instance
 
