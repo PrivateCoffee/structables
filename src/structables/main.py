@@ -54,6 +54,10 @@ def get_typesense_api_key():
 
 TYPESENSE_API_KEY = get_typesense_api_key()
 
+debugmode = False
+invidious = None
+unsafe = False
+
 
 def projects_search(
     query="*",
@@ -156,63 +160,7 @@ def update_data():
             )
 
 
-debugmode = os.environ.get("FLASK_DEBUG", os.environ.get("STRUCTABLES_DEBUG", False))
-invidious = os.environ.get("STRUCTABLES_INVIDIOUS")
-unsafe = os.environ.get("STRUCTABLES_UNSAFE", False)
-
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    parser.add_argument(
-        "-p",
-        "--port",
-        default=8002,
-        type=int,
-        help="Port to listen on",
-    )
-    parser.add_argument(
-        "-d",
-        "--debug",
-        action="store_true",
-        help="Enable debug mode",
-    )
-    parser.add_argument(
-        "-l",
-        "--listen-host",
-        default="127.0.0.1",
-        help="Host to listen on",
-    )
-    parser.add_argument(
-        "-I",
-        "--invidious",
-        help="URL to Invidious instance, e.g. https://invidious.private.coffee/",
-    )
-    parser.add_argument(
-        "-u",
-        "--unsafe",
-        action="store_true",
-        help="Display iframes regardless of origin",
-    )
-    args = parser.parse_args()
-
-    if args.debug:
-        debugmode = True
-
-    if args.invidious:
-        invidious = args.invidious
-
-    if args.unsafe:
-        unsafe = True
-
-print("Loading initial data...")
-
-update_data()
-
-print("Started!")
-
 app = Flask(__name__, template_folder="templates", static_folder="static")
-
-if debugmode:
-    app.logger.setLevel(logging.DEBUG)
 
 
 @app.route("/cron/")
@@ -1187,8 +1135,9 @@ def route_proxy():
         if url.startswith("https://cdn.instructables.com/") or url.startswith(
             "https://content.instructables.com/"
         ):
+
             def generate():
-                # Subfunction to allow streaming the data instead of 
+                # Subfunction to allow streaming the data instead of
                 # downloading all of it at once
                 try:
                     with urlopen(unquote(url)) as data:
@@ -1199,6 +1148,7 @@ def route_proxy():
                             yield chunk
                 except HTTPError as e:
                     abort(e.code)
+
             try:
                 with urlopen(unquote(url)) as data:
                     content_type = data.headers["content-type"]
@@ -1259,5 +1209,74 @@ def internal_server_error(e):
     return render_template("500.html")
 
 
-if __name__ == "__main__":
+def main():
+    global debugmode, invidious, unsafe
+
+    parser = ArgumentParser()
+    parser.add_argument(
+        "-p",
+        "--port",
+        default=8002,
+        type=int,
+        help="Port to listen on",
+    )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        action="store_true",
+        help="Enable debug mode",
+    )
+    parser.add_argument(
+        "-l",
+        "--listen-host",
+        default="127.0.0.1",
+        help="Host to listen on",
+    )
+    parser.add_argument(
+        "-I",
+        "--invidious",
+        help="URL to Invidious instance, e.g. https://invidious.private.coffee/",
+    )
+    parser.add_argument(
+        "-u",
+        "--unsafe",
+        action="store_true",
+        help="Display iframes regardless of origin",
+    )
+    parser.add_argument(
+        "-P",
+        "--privacy-file",
+        default="privacy.txt",
+        help="File to read privacy policy from",
+    )
+    args = parser.parse_args()
+
+    debugmode = os.environ.get(
+        "FLASK_DEBUG", os.environ.get("STRUCTABLES_DEBUG", False)
+    )
+    invidious = os.environ.get("STRUCTABLES_INVIDIOUS")
+    unsafe = os.environ.get("STRUCTABLES_UNSAFE", False)
+
+    if args.debug:
+        debugmode = True
+
+    if args.invidious:
+        invidious = args.invidious
+
+    if args.unsafe:
+        unsafe = True
+
+    print("Loading initial data...")
+
+    update_data()
+
+    print("Started!")
+
+    if debugmode:
+        app.logger.setLevel(logging.DEBUG)
+
     app.run(port=args.port, host=args.listen_host, debug=debugmode)
+
+
+if __name__ == "__main__":
+    main()

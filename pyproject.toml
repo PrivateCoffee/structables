@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "structables"
+version = "0.2.0"
+authors = [
+  { name="Private.coffee Team", email="support@private.coffee" },
+]
+description = "A simple frontend for Instructables"
+readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+  "flask",
+  "bs4",
+]
+
+[project.scripts]
+structables = "structables.main:main"
+
+[project.urls]
+"Homepage" = "https://git.private.coffee/privatecoffee/structables"
+"Bug Tracker" = "https://git.private.coffee/privatecoffee/structables/issues"
+"Source Code" = "https://git.private.coffee/privatecoffee/structables"
