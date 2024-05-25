@@ -1270,17 +1270,13 @@ def main():
     if args.unsafe:
         unsafe = True
 
-    print("Loading initial data...")
-
-    update_data()
-
-    print("Started!")
-
     if debugmode:
         app.logger.setLevel(logging.DEBUG)
 
     app.run(port=args.port, host=args.listen_host, debug=debugmode)
 
-
 if __name__ == "__main__":
     main()
+
+# Initialize data when the server starts
+update_data()
