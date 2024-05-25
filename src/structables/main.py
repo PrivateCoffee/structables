@@ -1195,22 +1195,22 @@ def privacypolicy():
 
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("404.html")
+    return render_template("404.html"), 404
 
 
 @app.errorhandler(400)
 def bad_request(e):
-    return render_template("400.html")
+    return render_template("400.html"), 400
 
 
 @app.errorhandler(429)
 def too_many_requests(e):
-    return render_template("429.html")
+    return render_template("429.html"), 429
 
 
 @app.errorhandler(500)
 def internal_server_error(e):
-    return render_template("500.html")
+    return render_template("500.html"), 500
 
 
 def main():
