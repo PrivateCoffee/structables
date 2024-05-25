@@ -306,9 +306,14 @@ def category_page(app, name, teachers=False):
         ):
             channels.append(channel["channel"])
 
-    category_ibles, total = projects_search(
-        app, category=name, page=page, filter_by="featureFlag:=true"
-    )
+    if teachers:
+        category_ibles, total = projects_search(
+            app, teachers=True, page=page, filter_by="featureFlag:=true"
+        )
+    else:
+        category_ibles, total = projects_search(
+            app, category=name, page=page, filter_by="featureFlag:=true"
+        )
 
     for ible in category_ibles:
         link = f"/{ible['document']['urlString']}"
@@ -352,6 +357,7 @@ def projects_search(
     app,
     query="*",
     category="",
+    teachers=False,
     channel="",
     filter_by="",
     page=1,
@@ -370,6 +376,11 @@ def projects_search(
         if filter_by:
             filter_by += " && "
         filter_by += f"channel:={channel}"
+
+    if teachers:
+        if filter_by:
+            filter_by += " && "
+        filter_by += "teachers:=Teachers"
 
     query = quote(query)
     filter_by = quote(filter_by)
