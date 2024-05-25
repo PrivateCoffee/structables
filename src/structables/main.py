@@ -492,6 +492,10 @@ def route_sitemap(path=""):
         for li in main.select("ul.sitemap-listing li"):
             channel = li.a.text
             channel_link = li.a["href"]
+            
+            if channel_link.startswith("https://"):
+                channel_link = f'/{"/".join(channel_link.split("/")[3:])}'
+
             channels.append([channel, channel_link])
         groups.append(["", "", channels])
 
