@@ -483,7 +483,7 @@ def project_list(head, sort="", per_page=20):
 
     return render_template(
         "projects.html",
-        title=head,
+        title=unslugify(head)[0],
         ibles=ibles,
         path=path,
         pagination=get_pagination(request, total, per_page),
