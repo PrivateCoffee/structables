@@ -36,7 +36,9 @@
       </div>
       {% endfor %}
     </div>
+    {% if section != sections[-1] %}
     <hr />
+    {% endif %}
   </section>
   {% endfor %}
 </div>
