@@ -14,6 +14,7 @@ from urllib.error import HTTPError
 from traceback import print_exc
 from urllib.parse import urlparse
 from argparse import ArgumentParser
+from typing import List
 
 from werkzeug.exceptions import BadRequest, abort, InternalServerError, NotFound
 from bs4 import BeautifulSoup
@@ -57,6 +58,26 @@ TYPESENSE_API_KEY = get_typesense_api_key()
 debugmode = False
 invidious = None
 unsafe = False
+
+
+def unslugify(slug: str) -> List[str]:
+    """Return a list of possible original titles for a slug.
+
+    Args:
+        slug (str): The slug to unslugify.
+
+    Returns:
+        List[str]: A list of possible original titles for the slug.
+    """
+
+    results = []
+
+    results.append(slug.replace("-", " ").title())
+
+    if "and" in slug:
+        results.append(results[0].replace("And", "&").title())
+
+    return results
 
 
 def projects_search(
@@ -402,9 +423,18 @@ def project_list(head, sort="", per_page=20):
             category = parts[1]
             channel = "" if parts[2] == "projects" else parts[2]
 
-            project_ibles, total = projects_search(
-                category=category, channel=channel, per_page=per_page, page=page
-            )
+            channel_names = unslugify(channel)
+
+            for channel_name in channel_names:
+                project_ibles, total = projects_search(
+                    category=category,
+                    channel=channel_name,
+                    per_page=per_page,
+                    page=page,
+                )
+
+                if project_ibles:
+                    break
 
         elif "search" in path.split("/"):
             ibles = []
@@ -492,7 +522,7 @@ def route_sitemap(path=""):
         for li in main.select("ul.sitemap-listing li"):
             channel = li.a.text
             channel_link = li.a["href"]
-            
+
             if channel_link.startswith("https://"):
                 channel_link = f'/{"/".join(channel_link.split("/")[3:])}'
 
@@ -1274,6 +1304,7 @@ def main():
         app.logger.setLevel(logging.DEBUG)
 
     app.run(port=args.port, host=args.listen_host, debug=debugmode)
+
 
 if __name__ == "__main__":
     main()
