@@ -13,8 +13,11 @@ app.typesense_api_key = get_typesense_api_key()
 
 init_routes(app)
 
-if __name__ == "__main__":
+def main():
     app.run(port=app.config['PORT'], host=app.config['LISTEN_HOST'], debug=app.config['DEBUG'])
+
+if __name__ == "__main__":
+    main()
 
 # Initialize data when the server starts
 update_data(app)
