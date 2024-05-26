@@ -333,10 +333,19 @@ def init_main_routes(app):
 
     @app.route("/privacypolicy/")
     def privacypolicy():
+        """Display the privacy policy.
+
+        The privacy policy is loaded from the file specified in the
+        `STRUCTABLES_PRIVACY_FILE` environment variable. If that variable is
+        unset or the file cannot be read, a default message is displayed.
+        """
+
         content = "No privacy policy found."
 
+        path = app.config.get("PRIVACY_FILE", "privacy.txt")
+
         try:
-            with (pathlib.Path(__file__).parent / "privacy.txt").open() as f:
+            with pathlib.Path(path).open() as f:
                 content = f.read()
         except OSError:
             pass
