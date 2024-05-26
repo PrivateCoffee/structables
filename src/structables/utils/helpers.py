@@ -9,9 +9,9 @@ from flask import request, render_template, abort
 logging.basicConfig(level=logging.DEBUG)
 
 
-def proxy(url):
+def proxy(url, filename=None):
     logging.debug(f"Generating proxy URL for {url}")
-    return f"/proxy/?url={url}"
+    return f"/proxy/?url={url}" + (f"&filename={filename}" if filename else "")
 
 
 def get_typesense_api_key():

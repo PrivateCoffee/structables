@@ -157,13 +157,13 @@ def init_main_routes(app):
                     for file in step["files"]:
                         if file["image"] and "embedType" not in "file":
                             step_imgs.append(
-                                {"src": proxy(file["downloadUrl"]), "alt": file["name"]}
+                                {"src": proxy(file["downloadUrl"], file["name"]), "alt": file["name"]}
                             )
 
                         elif not file["image"]:
                             step_downloads.append(
                                 {
-                                    "src": proxy(file["downloadUrl"]),
+                                    "src": proxy(file["downloadUrl"], file["name"]),
                                     "name": file["name"],
                                 }
                             )

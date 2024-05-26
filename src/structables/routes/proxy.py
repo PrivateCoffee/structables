@@ -4,10 +4,13 @@ from urllib.parse import unquote
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
+
 def init_proxy_routes(app):
     @app.route("/proxy/")
     def route_proxy():
         url = request.args.get("url")
+        filename = request.args.get("filename")
+
         if url is not None:
             if url.startswith("https://cdn.instructables.com/") or url.startswith(
                 "https://content.instructables.com/"
@@ -34,7 +37,14 @@ def init_proxy_routes(app):
                 except KeyError:
                     raise InternalServerError()
 
-                return Response(generate(), content_type=content_type)
+                headers = dict()
+
+                if filename is not None:
+                    headers["Content-Disposition"] = (
+                        f'attachment; filename="{filename}"'
+                    )
+
+                return Response(generate(), content_type=content_type, headers=headers)
             else:
                 raise BadRequest()
         else:
