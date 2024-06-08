@@ -6,7 +6,7 @@ class Config:
     LISTEN_HOST = os.environ.get("STRUCTABLES_LISTEN_HOST", "127.0.0.1")
     INVIDIOUS = os.environ.get("STRUCTABLES_INVIDIOUS")
     UNSAFE = os.environ.get("STRUCTABLES_UNSAFE", False)
-    PRIVACY_FILE = os.environ.get("STRUCTABLES_PRIVACY_FILE", "privacy.txt")
+    PRIVACY_FILE = os.environ.get("STRUCTABLES_PRIVACY_FILE")
 
     @staticmethod
     def init_app(app):

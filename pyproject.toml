@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "structables"
-version = "0.3.5"
+version = "0.3.6"
 authors = [
   { name="Private.coffee Team", email="support@private.coffee" },
 ]
@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
   "flask",
   "bs4",
+  "markdown2[all]",
 ]
 
 [project.scripts]

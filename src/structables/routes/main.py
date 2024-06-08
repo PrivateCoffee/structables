@@ -4,6 +4,7 @@ from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from werkzeug.exceptions import InternalServerError
+from markdown2 import Markdown
 from traceback import print_exc
 import pathlib
 import json
@@ -342,11 +343,24 @@ def init_main_routes(app):
 
         content = "No privacy policy found."
 
-        path = app.config.get("PRIVACY_FILE", "privacy.txt")
+        path = app.config.get("PRIVACY_FILE")
+
+        if not path:
+            if pathlib.Path("privacy.md").exists():
+                path = "privacy.md"
+
+            elif pathlib.Path("privacy.txt").exists():
+                path = "privacy.txt"
 
         try:
             with pathlib.Path(path).open() as f:
                 content = f.read()
+
+                print(path, content)
+
+                if path.endswith(".md"):
+                    content = Markdown().convert(content)
+                    
         except OSError:
             pass
 
