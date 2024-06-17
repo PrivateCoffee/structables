@@ -47,7 +47,7 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
    docker-compose up [-d]
    ```
 
-4. Point your reverse proxy to http://127.0.0.1:8002 (or your chosen port, if you modified it) and (optionally) serve static files from the container's static directory
+4. Point your reverse proxy to http://127.0.0.1:8002 (or your chosen port, if you modified it) and (optionally) serve static files from `structables/static`
 5. Connect to your instance under your domain
 
 ### Development
