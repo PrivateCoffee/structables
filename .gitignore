@@ -1,7 +1,9 @@
-venv/
-*.pyc
-__pycache__/
+.env
 .vscode
-privacy.txt
+__pycache__/
+dist/
+docker-compose.yml
 privacy.md
-/dist/
+privacy.txt
+*.pyc
+venv/

@@ -1,0 +1,18 @@
+services:
+  structables:
+    container_name: structables
+    restart: unless-stopped
+    build: .
+    ports:
+      - "127.0.0.1:8002:8002"
+    env_file: .env
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 300M
