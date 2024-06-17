@@ -16,6 +16,7 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 | URL                                                                        | Provided by                               | Country | Comments |
 | -------------------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
 | [https://structables.private.coffee/](https://structables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
+| [https://structables.bloat.cat/](https://structables.bloat.cat/)           | [Bloat.cat](https://bloat.cat)            | Romania |          |
 
 To add your own instance to this list, please open a pull request or issue.
 
