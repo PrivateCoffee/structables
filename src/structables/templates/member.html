@@ -4,7 +4,7 @@
 	<center>
 		<img width=150px height=150px style="display:inline-block;" src="{{ header_content.avatar }}" alt="{{ header_content.title }}">
 		<h1>{{ header_content.title }}</h1>
-		<span>{{ header_content.location }}&nbsp;&nbsp;</span>
+		<span>{% if header_content.location %}{{ header_content.location }}&nbsp;&nbsp;{% endif %}</span>
 		<span>{{ header_content.signup }}</span>
 		<br>
 		<span>{{ header_content.instructables }} Instructables&nbsp;&nbsp;</span>

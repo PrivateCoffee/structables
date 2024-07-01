@@ -1,14 +1,32 @@
 from flask import render_template, abort
 from urllib.request import urlopen
 from urllib.error import HTTPError
+from urllib.parse import quote
 from ..utils.helpers import proxy, member_header
 from bs4 import BeautifulSoup
 from urllib.request import Request
 
 
 def init_member_routes(app):
+    """This function initializes all the routes related to Instructables member profiles.
+
+    Args:
+        app (Flask): The Flask app instance.
+    """
+
     @app.route("/member/<member>/instructables/")
     def route_member_instructables(member):
+        """Route to display a member's Instructables.
+
+        Args:
+            member (str): The member's username.
+
+        Returns:
+            Response: The rendered HTML page.
+        """
+
+        member = quote(member)
+
         try:
             data = urlopen(
                 f"https://www.instructables.com/member/{member}/instructables/"
@@ -55,13 +73,18 @@ def init_member_routes(app):
 
     @app.route("/member/<member>/")
     def route_member(member):
-        headers = {
-            "User-Agent": "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/113.0"
-        }
+        """Route to display a member's profile.
 
-        request = Request(
-            f"https://www.instructables.com/member/{member}/", headers=headers
-        )
+        Args:
+            member (str): The member's username.
+
+        Returns:
+            Response: The rendered HTML page.
+        """
+
+        member = quote(member)
+
+        request = Request(f"https://www.instructables.com/member/{member}/")
 
         try:
             data = urlopen(request)
@@ -103,9 +126,9 @@ def init_member_routes(app):
                 "div.achievements-section.main-achievements.contest-achievements div.achievement-item:not(.two-column-filler)"
             ):
                 try:
-                    ach_title = ach.select("div.achievement-info span.achievement-title")[
-                        0
-                    ].text
+                    ach_title = ach.select(
+                        "div.achievement-info span.achievement-title"
+                    )[0].text
                     ach_desc = ach.select(
                         "div.achievement-info span.achievement-description"
                     )[0].text
