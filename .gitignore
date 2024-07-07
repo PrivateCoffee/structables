@@ -1,7 +1,7 @@
 .env
 .vscode
 __pycache__/
-dist/
+/dist/
 docker-compose.yml
 privacy.md
 privacy.txt
