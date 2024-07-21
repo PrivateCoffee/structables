@@ -1,9 +1,13 @@
 .env
 .vscode
 __pycache__/
-/dist/
 docker-compose.yml
 privacy.md
 privacy.txt
 *.pyc
 venv/
+
+# Special rules needed for building the Docker image
+/dist/*
+!/dist/css/
+!/dist/css/*
