@@ -158,48 +158,53 @@ def init_main_routes(app):
                     for file in step["files"]:
                         if file["image"] and "embedType" not in "file":
                             step_imgs.append(
-                                {"src": proxy(file["downloadUrl"], file["name"]), "alt": file["name"]}
+                                {
+                                    "src": proxy(file["downloadUrl"], file["name"]),
+                                    "alt": file["name"],
+                                }
                             )
 
                         elif not file["image"]:
-                            step_downloads.append(
-                                {
-                                    "src": proxy(file["downloadUrl"], file["name"]),
-                                    "name": file["name"],
-                                }
-                            )
-
-                        else:  # Leaves us with embeds
-                            embed_code = file["embedHtmlCode"]
-                            soup = BeautifulSoup(embed_code, "html.parser")
-
-                            iframe = soup.select("iframe")[0]
-
-                            src = iframe.get("src")
-
-                            if src.startswith("https://content.instructables.com"):
-                                src = src.replace(
-                                    "https://content.instructables.com",
-                                    f"/proxy/?url={src}",
+                            if "downloadUrl" in file.keys():
+                                step_downloads.append(
+                                    {
+                                        "src": proxy(file["downloadUrl"], file["name"]),
+                                        "name": file["name"],
+                                    }
                                 )
 
-                            elif app.config["INVIDIOUS"] and src.startswith(
-                                "https://www.youtube.com"
-                            ):
-                                src = src.replace(
-                                    "https://www.youtube.com", app.config["INVIDIOUS"]
+                            else:  # Leaves us with embeds
+                                embed_code = file["embedHtmlCode"]
+                                soup = BeautifulSoup(embed_code, "html.parser")
+
+                                iframe = soup.select("iframe")[0]
+
+                                src = iframe.get("src")
+
+                                if src.startswith("https://content.instructables.com"):
+                                    src = src.replace(
+                                        "https://content.instructables.com",
+                                        f"/proxy/?url={src}",
+                                    )
+
+                                elif app.config["INVIDIOUS"] and src.startswith(
+                                    "https://www.youtube.com"
+                                ):
+                                    src = src.replace(
+                                        "https://www.youtube.com",
+                                        app.config["INVIDIOUS"],
+                                    )
+
+                                elif not app.config["UNSAFE"]:
+                                    src = "/iframe/?url=" + quote(src)
+
+                                step_iframes.append(
+                                    {
+                                        "src": src,
+                                        "width": file.get("width"),
+                                        "height": file.get("height"),
+                                    }
                                 )
-
-                            elif not app.config["UNSAFE"]:
-                                src = "/iframe/?url=" + quote(src)
-
-                            step_iframes.append(
-                                {
-                                    "src": src,
-                                    "width": file.get("width"),
-                                    "height": file.get("height"),
-                                }
-                            )
 
                     step_text = step["body"]
                     step_text = step_text.replace(
@@ -360,7 +365,7 @@ def init_main_routes(app):
 
                 if path.endswith(".md"):
                     content = Markdown().convert(content)
-                    
+
         except OSError:
             pass
 
