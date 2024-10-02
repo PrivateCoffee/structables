@@ -36,6 +36,7 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
 4. Run `uwsgi --plugin python3 --http-socket 0.0.0.0:8002 --module structables.main:app --processes 4 --threads 4`
 5. Point your reverse proxy to http://localhost:8002 and (optionally) serve static files from the `venv/lib/pythonX.XX/site-packages/structables/static` directory
 6. Connect to your instance under your domain
+7. Ensure that `/cron/` is executed at regular intervals so that the app updates its cached data.
 
 ### Production: Docker
 
@@ -49,6 +50,7 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
 
 4. Point your reverse proxy to http://127.0.0.1:8002 (or your chosen port, if you modified it) and (optionally) serve static files from `structables/static`
 5. Connect to your instance under your domain
+6. Ensure that `/cron/` is executed at regular intervals so that the app updates its cached data.
 
 ### Development
 

@@ -40,3 +40,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+else:
+    # Even if we're using a wsgi server, we still have to initialize global_ibles
+    update_data(app)
