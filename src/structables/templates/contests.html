@@ -1,40 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-	<center>
-		<h1>{{ title }}</h1>
-		{{ contest_count|safe }}
-		<br>
-		<div class="contest-list">
-			{% for contest in contests %}
-			<div class="contest-list-item">
-				<a href="{{ contest.link }}">
-					<img src="{{ contest.img }}" alt="{{ contest.alt }}" style="max-width:500px;">
-				</a>
-				<p>Closes {{ contest.deadline }}</p>
-				<p class="ible-small">{{ contest.prizes }} Prizes, {{ contest.entries }} Entries</p>
-			</div>
-			{% endfor %}
-		</div>
-		<div class="closed-contests" id="contest-winners">
-			<h2>Winner's Circle</h2>
-			{% for closed in closed %}
-			<div class="closed-contest">
-				<a href="{{ closed.link }}"><img class="closed-contest-contest" src="{{ closed.img }}"
-						alt="{{ closed.alt }}"></a>
-				{% for featured_items in closed.featured_items %}
-				<div class="closed-contest-winner">
-					<a href="{{ featured_items.link }}">
-						<img class="closed-contest-winner-img" src="{{ featured_items.img }}"
-							alt="{{ featured_items.title}}">
-						<br>
-						<b>{{ featured_items.title }}</b>
-					</a>
-					<p>by <a href="{{ featured_items.author_link }}">{{ featured_items.author }}</a></p>
-				</div>
-				{% endfor %}
-			</div>
-			{% endfor %}
-		</div>
-	</center>
+    <center>
+        <h1>{{ title }}</h1>
+        <p>Total Running Contests: {{ contest_count }}</p>
+        <br>
+        <div class="contest-list">
+            {% for contest in contests %}
+            <div class="contest-list-item">
+                <a href="{{ contest.link }}">
+                    <img src="{{ contest.img }}" alt="{{ contest.alt }}" style="max-width:500px;">
+                </a>
+                <h2>{{ contest.title }}</h2>
+                <p>Closes: {{ contest.deadline }}</p>
+                <p class="ible-small">{{ contest.prizes }} Prizes, {{ contest.entries }} Entries</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="closed-contests" id="contest-winners">
+            <h2>Winner's Circle</h2>
+            {% for closed in closed %}
+            <div class="closed-contest">
+                <a href="{{ closed.link }}"><img class="closed-contest-contest" src="{{ closed.img }}"
+                        alt="{{ closed.alt }}"></a>
+                {% for featured_items in closed.featured_items %}
+                <div class="closed-contest-winner">
+                    <a href="{{ featured_items.link }}">
+                        <img class="closed-contest-winner-img" src="{{ featured_items.img }}"
+                            alt="{{ featured_items.title}}">
+                        <br>
+                        <b>{{ featured_items.title }}</b>
+                    </a>
+                    <p>by <a href="{{ featured_items.author_link }}">{{ featured_items.author }}</a></p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </center>
 {% endblock %}

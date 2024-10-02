@@ -49,7 +49,7 @@ def init_contest_routes(app):
             "total_pages": total_pages,
             "has_prev": page > 1,
             "has_next": page < total_pages,
-            "limit": limit
+            "limit": limit,
         }
 
         return render_template(
@@ -125,68 +125,33 @@ def init_contest_routes(app):
     @app.route("/contest/")
     def route_contests():
         try:
-            data = urlopen("https://www.instructables.com/contest/")
+            # Fetch current contests from the JSON API
+            response = urlopen(
+                "https://www.instructables.com/json-api/getCurrentContests?limit=50&offset=0"
+            )
+            data = json.loads(response.read().decode())
         except HTTPError as e:
             abort(e.code)
+        except Exception as e:
+            abort(500)  # Handle other exceptions such as JSON decode errors
 
-        soup = BeautifulSoup(data.read().decode(), "html.parser")
-
-        contest_count = "0"
-
-        contests = []
-        for contest in soup.select("div#cur-contests div.row-fluid div.contest-banner"):
-            link = contest.select("div.contest-banner-inner a")[0].get("href")
-            img = proxy(contest.select("div.contest-banner-inner a img")[0].get("src"))
-            alt = contest.select("div.contest-banner-inner a img")[0].get("alt")
-            deadline = contest.select("span.contest-meta-deadline")[0].get(
-                "data-deadline"
-            )
-            prizes = contest.select("span.contest-meta-count")[0].text
-            entries = contest.select("span.contest-meta-count")[1].text
-
-            contests.append(
-                {
-                    "link": link,
-                    "img": img,
-                    "alt": alt,
-                    "deadline": deadline,
-                    "prizes": prizes,
-                    "entries": entries,
-                }
-            )
-
-        closed = []
-        for display in soup.select("div.contest-winner-display"):
-            link = display.select("div.contest-banner-inner a")[0].get("href")
-            img = proxy(display.select("div.contest-banner-inner a img")[0].get("src"))
-            alt = display.select("div.contest-banner-inner a img")[0].get("alt")
-            featured_items = []
-            for featured_item in display.select("ul.featured-items li"):
-                item_link = featured_item.select("div.ible-thumb a")[0].get("href")
-                item_img = proxy(
-                    featured_item.select("div.ible-thumb a img")[0].get("src")
-                )
-                item_title = featured_item.select("a.title")[0].text
-                item_author = featured_item.select("a.author")[0].text
-                item_author_link = featured_item.select("a.author")[0].get("href")
-
-                featured_items.append(
-                    {
-                        "link": item_link,
-                        "img": item_img,
-                        "title": item_title,
-                        "author": item_author,
-                        "author_link": item_author_link,
-                    }
-                )
-            closed.append(
-                {"link": link, "img": img, "alt": alt, "featured_items": featured_items}
-            )
+        contests = data.get("contests", [])
+        contest_list = []
+        for contest in contests:
+            contest_details = {
+                "link": f"https://www.instructables.com/{contest['urlString']}",
+                "img": contest["bannerUrlMedium"],
+                "alt": contest["title"],
+                "title": contest["title"],
+                "deadline": contest["deadline"],
+                "prizes": contest["prizeCount"],
+                "entries": contest["numEntries"],
+            }
+            contest_list.append(contest_details)
 
         return render_template(
             "contests.html",
             title="Contests",
-            contest_count=contest_count,
-            contests=contests,
-            closed=closed,
+            contest_count=len(contest_list),
+            contests=contest_list,
         )
