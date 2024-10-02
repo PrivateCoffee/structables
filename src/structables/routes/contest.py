@@ -3,50 +3,59 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from ..utils.helpers import proxy
 from bs4 import BeautifulSoup
+import json
+
 
 def init_contest_routes(app):
     @app.route("/contest/archive/")
     def route_contest_archive():
-        page = 1
-        if request.args.get("page") is not None:
-            page = request.args.get("page")
+        # Default pagination settings
+        limit = 10
+        page = request.args.get("page", default=1, type=int)
+        offset = (page - 1) * limit
 
         try:
-            data = urlopen(f"https://www.instructables.com/contest/archive/?page={page}")
+            # Fetch data using urlopen
+            url = f"https://www.instructables.com/json-api/getClosedContests?limit={limit}&offset={offset}"
+            response = urlopen(url)
+            data = json.loads(response.read().decode())
         except HTTPError as e:
             abort(e.code)
+        except Exception as e:
+            abort(500)  # Handle other exceptions like JSON decode errors
 
-        soup = BeautifulSoup(data.read().decode(), "html.parser")
-
-        main = soup.select("div#contest-archive-wrapper")[0]
-
-        contest_count = main.select("p.contest-count")[0].text
+        contests = data.get("contests", [])
+        full_list_size = data.get("fullListSize", 0)
 
         contest_list = []
-        for index, year in enumerate(main.select("div.contest-archive-list h2")):
-            year_list = main.select(
-                "div.contest-archive-list div.contest-archive-list-year"
-            )[index]
-            year_name = year.text
-            month_list = []
-            for month in year_list.select("div.contest-archive-list-month"):
-                month_name = month.select("h3")[0].text
-                month_contest_list = []
-                for p in month.select("p"):
-                    date = p.select("span")[0].text
-                    link = p.select("a")[0].get("href")
-                    title = p.select("a")[0].text
-                    month_contest_list.append([date, link, title])
-                month_list.append([month_name, month_contest_list])
-            contest_list.append([year_name, month_list])
+        for contest in contests:
+            contest_details = {
+                "title": contest["title"],
+                "link": f"https://www.instructables.com/{contest['urlString']}",
+                "deadline": contest["deadline"],
+                "startDate": contest["startDate"],
+                "numEntries": contest["numEntries"],
+                "state": contest["state"],
+                "bannerUrl": contest["bannerUrlMedium"],
+            }
+            contest_list.append(contest_details)
 
-        pagination = main.select("nav.pagination ul.pagination")[0]
+        # Calculate total pages
+        total_pages = (full_list_size + limit - 1) // limit
+
+        # Create pagination
+        pagination = {
+            "current_page": page,
+            "total_pages": total_pages,
+            "has_prev": page > 1,
+            "has_next": page < total_pages,
+            "limit": limit
+        }
 
         return render_template(
             "archives.html",
             title=f"Contest Archives (Page {page})",
             page=page,
-            contest_count=contest_count,
             pagination=pagination,
             contest_list=contest_list,
         )
@@ -78,7 +87,9 @@ def init_contest_routes(app):
         body.select("span.contest-entity-count")[0].text
 
         entry_list = []
-        for entry in body.select("div.contest-entries-list div.contest-entries-list-ible"):
+        for entry in body.select(
+            "div.contest-entries-list div.contest-entries-list-ible"
+        ):
             link = entry.a["href"]
             entry_img = proxy(entry.select("a noscript img")[0].get("src"))
             entry_title = entry.select("a.ible-title")[0].text
@@ -120,14 +131,16 @@ def init_contest_routes(app):
 
         soup = BeautifulSoup(data.read().decode(), "html.parser")
 
-        contest_count = str(soup.select("p.contest-count")[0])
+        contest_count = "0"
 
         contests = []
         for contest in soup.select("div#cur-contests div.row-fluid div.contest-banner"):
             link = contest.select("div.contest-banner-inner a")[0].get("href")
             img = proxy(contest.select("div.contest-banner-inner a img")[0].get("src"))
             alt = contest.select("div.contest-banner-inner a img")[0].get("alt")
-            deadline = contest.select("span.contest-meta-deadline")[0].get("data-deadline")
+            deadline = contest.select("span.contest-meta-deadline")[0].get(
+                "data-deadline"
+            )
             prizes = contest.select("span.contest-meta-count")[0].text
             entries = contest.select("span.contest-meta-count")[1].text
 
@@ -150,7 +163,9 @@ def init_contest_routes(app):
             featured_items = []
             for featured_item in display.select("ul.featured-items li"):
                 item_link = featured_item.select("div.ible-thumb a")[0].get("href")
-                item_img = proxy(featured_item.select("div.ible-thumb a img")[0].get("src"))
+                item_img = proxy(
+                    featured_item.select("div.ible-thumb a img")[0].get("src")
+                )
                 item_title = featured_item.select("a.title")[0].text
                 item_author = featured_item.select("a.author")[0].text
                 item_author_link = featured_item.select("a.author")[0].get("href")
