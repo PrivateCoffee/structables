@@ -1,23 +1,23 @@
-
 {% extends "base.html" %}
 
 {% block content %}
-	<center>
-		<img src="{{ img }}" alt="{{ title }}" style="max-width:98vw;">
-		<p>{{ entry_count }} Entries, {{ prizes }} Prizes</p>
-		<br>
-		{{ info|safe }}
-		<div class="ible-list">
-			{% for ible in entries %}
-			<div class="ible-list-item">
-				<a href="{{ ible.link }}" style="color:#bbc2cf;">
-					<img style="max-width:350px;" src="{{ ible.entry_img }}" alt="{{ ible.entry_title }}">
-					<p>{{ ible.entry_title }}</p>
-				</a>
-				<p>by <a href="{{ ible.author_link }}">{{ ible.author }}</a> in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a></p>
-				<p>{{ ible.views }} Views</p>
-			</div>
-			{% endfor %}
-		</div>
-	</center>
+    <center>
+        <h1>{{ title }}</h1>
+        <img src="{{ img }}" alt="{{ title }}" style="max-width:98vw;">
+        <p>{{ entry_count }} Entries, {{ prizes }} Prizes</p>
+        <br>
+        {{ info|safe }}
+        <div class="ible-list">
+            {% for ible in entry_list %}
+            <div class="ible-list-item">
+                <a href="{{ ible.link }}" style="color:#bbc2cf;">
+                    <img style="max-width:350px;" src="{{ ible.entry_img }}" alt="{{ ible.entry_title }}">
+                    <p>{{ ible.entry_title }}</p>
+                </a>
+                <p>by <a href="{{ ible.author_link }}">{{ ible.author }}</a> in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a></p>
+                <p>{{ ible.views }} Views</p>
+            </div>
+            {% endfor %}
+        </div>
+    </center>
 {% endblock %}

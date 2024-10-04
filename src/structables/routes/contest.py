@@ -1,5 +1,5 @@
-from flask import render_template, request, abort
-from urllib.request import urlopen
+from flask import render_template, request, abort, url_for
+from urllib.request import urlopen, Request
 from urllib.error import HTTPError
 from ..utils.helpers import proxy
 from bs4 import BeautifulSoup
@@ -31,7 +31,7 @@ def init_contest_routes(app):
         for contest in contests:
             contest_details = {
                 "title": contest["title"],
-                "link": f"/{contest['urlString']}",
+                "link": url_for("route_contest", contest=contest["urlString"]),
                 "deadline": contest["deadline"],
                 "startDate": contest["startDate"],
                 "numEntries": contest["numEntries"],
@@ -60,57 +60,74 @@ def init_contest_routes(app):
             contest_list=contest_list,
         )
 
+    def get_entries(contest):
+        base_url = f"https://www.instructables.com/api_proxy/search/collections/projects/documents/search"
+        headers = {"x-typesense-api-key": app.typesense_api_key}
+        page, per_page = 1, 100
+        all_entries = []
+
+        while True:
+            try:
+                url = f"{base_url}?q=*&filter_by=contestPath:{contest}&sort_by=contestEntryDate:desc&per_page={per_page}&page={page}"
+                request = Request(url, headers=headers)
+                response = urlopen(request)
+                data = json.loads(response.read().decode())
+            except HTTPError as e:
+                abort(e.code)
+
+            hits = data.get("hits", [])
+            if not hits:
+                break
+
+            all_entries.extend(hits)
+            if len(hits) < per_page:
+                break
+            page += 1
+
+        return all_entries
+
     @app.route("/contest/<contest>/")
     def route_contest(contest):
         try:
             data = urlopen(f"https://www.instructables.com/contest/{contest}/")
+            html = data.read().decode()
+            soup = BeautifulSoup(html, "html.parser")
+
+            title_tag = soup.find("h1")
+            title = title_tag.get_text() if title_tag else "Contest"
+
+            img_tag = soup.find("img", alt=lambda x: x and "Banner" in x)
+            img = img_tag.get("src") if img_tag else "default.jpg"
+
+            entry_count = len(get_entries(contest))
+            prizes_items = soup.select("article")
+            prizes = len(prizes_items) if prizes_items else 0
+
+            overview_section = soup.find("section", id="overview")
+            info = (
+                overview_section.decode_contents()
+                if overview_section
+                else "No Overview"
+            )
+
         except HTTPError as e:
             abort(e.code)
 
-        soup = BeautifulSoup(data.read().decode(), "html.parser")
-
-        title = soup.select('meta[property="og:title"]')[0].get("content")
-
-        body = soup.select("div#contest-wrapper")[0]
-
-        img = proxy(body.select("div#contest-masthead img")[0].get("src"))
-
-        entry_count = body.select("li.entries-nav-btn")[0].text.split(" ")[0]
-        prizes = body.select("li.prizes-nav-btn")[0].text.split(" ")[0]
-
-        info = body.select("div.contest-body-column-left")[0]
-        info.select("div#site-announcements-page")[0].decompose()
-        info.select("h3")[0].decompose()
-        info.select("div#contest-body-nav")[0].decompose()
-        info = str(info).replace("https://www.instructables.com", "/")
-
-        body.select("span.contest-entity-count")[0].text
-
         entry_list = []
-        for entry in body.select(
-            "div.contest-entries-list div.contest-entries-list-ible"
-        ):
-            link = entry.a["href"]
-            entry_img = proxy(entry.select("a noscript img")[0].get("src"))
-            entry_title = entry.select("a.ible-title")[0].text
-            author = entry.select("div span.ible-author a")[0].text
-        author_link = entry.select("div span.ible-author a")[0].get("href")
-        channel = entry.select("div span.ible-channel a")[0].text
-        channel_link = entry.select("div span.ible-channel a")[0].get("href")
-        views = entry.select(".ible-views")[0].text
-
-        entry_list.append(
-            {
-                "link": link,
-                "entry_img": entry_img,
-                "entry_title": entry_title,
-                "author": author,
-                "author_link": author_link,
-                "channel": channel,
-                "channel_link": channel_link,
-                "views": views,
+        entries = get_entries(contest)
+        for entry in entries:
+            doc = entry["document"]
+            entry_details = {
+                "link": url_for("route_article", article=doc["urlString"]),
+                "entry_img": doc["coverImageUrl"],
+                "entry_title": doc["title"],
+                "author": doc["screenName"],
+                "author_link": url_for("route_member", member=doc["screenName"]),
+                "channel": doc["channel"][0],
+                "channel_link": f"/{doc['primaryClassification']}",
+                "views": doc.get("views", 0),
             }
-        )
+            entry_list.append(entry_details)
 
         return render_template(
             "contest.html",
@@ -139,7 +156,7 @@ def init_contest_routes(app):
         contest_list = []
         for contest in contests:
             contest_details = {
-                "link": f"/{contest['urlString']}",
+                "link": url_for("route_contest", contest=contest["urlString"]),
                 "img": proxy(contest["bannerUrlMedium"]),
                 "alt": contest["title"],
                 "title": contest["title"],
