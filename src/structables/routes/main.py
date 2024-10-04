@@ -357,17 +357,16 @@ def init_main_routes(app):
             elif pathlib.Path("privacy.txt").exists():
                 path = "privacy.txt"
 
-        try:
-            with pathlib.Path(path).open() as f:
-                content = f.read()
+        if path:
+            try:
+                with pathlib.Path(path).open() as f:
+                    content = f.read()
 
-                print(path, content)
+                    if path.endswith(".md"):
+                        content = Markdown().convert(content)
 
-                if path.endswith(".md"):
-                    content = Markdown().convert(content)
-
-        except OSError:
-            pass
+            except OSError:
+                pass
 
         return render_template(
             "privacypolicy.html", title="Privacy Policy", content=content
