@@ -31,12 +31,12 @@ def init_contest_routes(app):
         for contest in contests:
             contest_details = {
                 "title": contest["title"],
-                "link": f"https://www.instructables.com/{contest['urlString']}",
+                "link": f"/{contest['urlString']}",
                 "deadline": contest["deadline"],
                 "startDate": contest["startDate"],
                 "numEntries": contest["numEntries"],
                 "state": contest["state"],
-                "bannerUrl": contest["bannerUrlMedium"],
+                "bannerUrl": proxy(contest["bannerUrlMedium"]),
             }
             contest_list.append(contest_details)
 
@@ -139,8 +139,8 @@ def init_contest_routes(app):
         contest_list = []
         for contest in contests:
             contest_details = {
-                "link": f"https://www.instructables.com/{contest['urlString']}",
-                "img": contest["bannerUrlMedium"],
+                "link": f"/{contest['urlString']}",
+                "img": proxy(contest["bannerUrlMedium"]),
                 "alt": contest["title"],
                 "title": contest["title"],
                 "deadline": contest["deadline"],
