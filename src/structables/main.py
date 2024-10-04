@@ -14,6 +14,7 @@ app.config.from_object(Config)
 app.typesense_api_key = get_typesense_api_key()
 
 init_routes(app)
+update_data(app)
 
 
 def background_update_data(app):
@@ -40,6 +41,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-else:
-    # Even if we're using a wsgi server, we still have to initialize global_ibles
-    update_data(app)
