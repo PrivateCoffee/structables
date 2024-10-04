@@ -61,6 +61,17 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
 5. Run `structables`
 6. Connect to http://localhost:8002
 
+### Environment Variables
+
+Structables supports the use of the following environment variables for configuration:
+
+* `STRUCTABLES_PORT`: The port to listen on (default: 8002)
+* `STRUCTABLES_LISTEN_HOST`: The host/IP address to listen on (default: 127.0.0.1)
+* `STRUCTABLES_INVIDIOUS`: The hostname of an Invidious instance to use for embedded YouTube videos (currently not recommended due to YouTube blocks)
+* `STRUCTABLES_UNSAFE`: If set, allow embedding untrusted iframes (if unset, display a warning and allow loading the content manually)
+* `STRUCTABLES_PRIVACY_FILE`: The path to a text file or Markdown file (with .md suffix) to use for the Privacy Policy page (if unset, try `privacy.txt` or `privacy.md` in the working directory, or fall back to a generic message)
+* `STRUCTABLES_DEBUG`: If set, log additional debug information to stdout
+
 ## License
 
 This project, as well as the two projects it is based on, are licensed under the GNU Affero General Public License v3. See the [LICENSE](LICENSE) file for more information.
