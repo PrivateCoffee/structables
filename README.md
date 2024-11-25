@@ -13,10 +13,11 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 
 ## Instances
 
-| URL                                                               | Provided by                               | Country | Comments |
-| ----------------------------------------------------------------- | ----------------------------------------- | ------- | -------- |
-| [structables.private.coffee](https://structables.private.coffee/) | [Private.coffee](https://private.coffee/) | Austria |          |
-| [structables.bloat.cat](https://structables.bloat.cat/)           | [Bloat.cat](https://bloat.cat)            | Germany |          |
+| URL                                                                     | Provided by                                     | Country   | Comments |
+| ----------------------------------------------------------------------- | ----------------------------------------------- | --------- | -------- |
+| [structables.private.coffee](https://structables.private.coffee/)       | [Private.coffee](https://private.coffee/)       | Austria   |          |
+| [structables.bloat.cat](https://structables.bloat.cat/)                 | [Bloat.cat](https://bloat.cat)                  | Germany   |          |
+| [structables.darkness.services](https://structables.darkness.services/) | [Darkness.services](https://darkness.services/) | USA       |          |
 
 To add your own instance to this list, please open a pull request or issue.
 
