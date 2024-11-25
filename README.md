@@ -13,18 +13,18 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 
 ## Instances
 
-| URL                                                                     | Provided by                                     | Country   | Comments |
-| ----------------------------------------------------------------------- | ----------------------------------------------- | --------- | -------- |
-| [structables.private.coffee](https://structables.private.coffee/)       | [Private.coffee](https://private.coffee/)       | Austria   |          |
-| [structables.bloat.cat](https://structables.bloat.cat/)                 | [Bloat.cat](https://bloat.cat)                  | Germany   |          |
-| [structables.darkness.services](https://structables.darkness.services/) | [Darkness.services](https://darkness.services/) | USA       |          |
+| URL                                                                     | Provided by                                     | Country | Comments |
+| ----------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
+| [structables.private.coffee](https://structables.private.coffee/)       | [Private.coffee](https://private.coffee/)       | Austria |          |
+| [structables.bloat.cat](https://structables.bloat.cat/)                 | [Bloat.cat](https://bloat.cat)                  | Germany |          |
+| [structables.darkness.services](https://structables.darkness.services/) | [Darkness.services](https://darkness.services/) | USA     |          |
 
 ### Tor Hidden Services
 
-| URL                                                                                                                                                  | Provided by                                     | Country | Comments |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
-| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/) | [Private.coffee](https://private.coffee/)       | Austria |          |
-| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion/) | [Darkness.services](https://darkness.services/) | USA |          |
+| URL                                                                                                                                                              | Provided by                                     | Country | Comments |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
+| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/) | [Private.coffee](https://private.coffee/)       | Austria |          |
+| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion/) | [Darkness.services](https://darkness.services/) | USA     |          |
 
 ### Adding Your Instance
 
@@ -75,12 +75,12 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
 
 Structables supports the use of the following environment variables for configuration:
 
-* `STRUCTABLES_PORT`: The port to listen on (default: 8002)
-* `STRUCTABLES_LISTEN_HOST`: The host/IP address to listen on (default: 127.0.0.1)
-* `STRUCTABLES_INVIDIOUS`: The hostname of an Invidious instance to use for embedded YouTube videos (currently not recommended due to YouTube blocks)
-* `STRUCTABLES_UNSAFE`: If set, allow embedding untrusted iframes (if unset, display a warning and allow loading the content manually)
-* `STRUCTABLES_PRIVACY_FILE`: The path to a text file or Markdown file (with .md suffix) to use for the Privacy Policy page (if unset, try `privacy.txt` or `privacy.md` in the working directory, or fall back to a generic message)
-* `STRUCTABLES_DEBUG`: If set, log additional debug information to stdout
+- `STRUCTABLES_PORT`: The port to listen on (default: 8002)
+- `STRUCTABLES_LISTEN_HOST`: The host/IP address to listen on (default: 127.0.0.1)
+- `STRUCTABLES_INVIDIOUS`: The hostname of an Invidious instance to use for embedded YouTube videos (currently not recommended due to YouTube blocks)
+- `STRUCTABLES_UNSAFE`: If set, allow embedding untrusted iframes (if unset, display a warning and allow loading the content manually)
+- `STRUCTABLES_PRIVACY_FILE`: The path to a text file or Markdown file (with .md suffix) to use for the Privacy Policy page (if unset, try `privacy.txt` or `privacy.md` in the working directory, or fall back to a generic message)
+- `STRUCTABLES_DEBUG`: If set, log additional debug information to stdout
 
 ## License
 
