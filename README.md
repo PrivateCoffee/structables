@@ -19,7 +19,16 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 | [structables.bloat.cat](https://structables.bloat.cat/)                 | [Bloat.cat](https://bloat.cat)                  | Germany   |          |
 | [structables.darkness.services](https://structables.darkness.services/) | [Darkness.services](https://darkness.services/) | USA       |          |
 
-To add your own instance to this list, please open a pull request or issue.
+### Tor Hidden Services
+
+| URL                                                                                                                                                  | Provided by                                     | Country | Comments |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
+| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/) | [Private.coffee](https://private.coffee/)       | Austria |          |
+| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion/) | [Darkness.services](https://darkness.services/) | USA |          |
+
+### Adding Your Instance
+
+To add your own instance to this list, please open a pull request or issue, see below.
 
 ## Opening Issues
 
