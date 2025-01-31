@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import re
 import logging
 import json
+import math
 from flask import request, render_template, abort
 
 logging.basicConfig(level=logging.DEBUG)
@@ -414,7 +415,7 @@ def projects_search(
 
     logging.debug(f"Got {len(project_ibles)} projects")
 
-    return project_ibles, project_obj["out_of"]
+    return project_ibles, math.ceil(project_obj["found"] / per_page)
 
 
 def update_data(app):
