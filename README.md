@@ -13,18 +13,22 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 
 ## Instances
 
-| URL                                                                     | Provided by                                     | Country | Comments |
-| ----------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
-| [structables.private.coffee](https://structables.private.coffee/)       | [Private.coffee](https://private.coffee/)       | Austria |          |
-| [structables.bloat.cat](https://structables.bloat.cat/)                 | [Bloat.cat](https://bloat.cat)                  | Germany |          |
-| [structables.darkness.services](https://structables.darkness.services/) | [Darkness.services](https://darkness.services/) | USA     |          |
+<!-- START_INSTANCE_LIST type:eq=clearnet -->
+| URL                                                                    | Provided by                                    | Country          | Notes         |
+| ---------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
+| [structables.private.coffee](https://structables.private.coffee) | [Private.coffee](https://private.coffee) | Austria 🇦🇹 🇪🇺 | Main instance |
+| [structables.bloat.cat](https://structables.bloat.cat) | [Bloat.cat](https://bloat.cat) | Germany 🇩🇪 🇪🇺 |  |
+| [structables.darkness.services](https://structables.darkness.services) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |  |
+<!-- END_INSTANCE_LIST -->
 
 ### Tor Hidden Services
 
-| URL                                                                                                                                                              | Provided by                                     | Country | Comments |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------- | -------- |
-| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion/) | [Private.coffee](https://private.coffee/)       | Austria |          |
-| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion/) | [Darkness.services](https://darkness.services/) | USA     |          |
+<!-- START_INSTANCE_LIST type:eq=onion -->
+| URL                                                                                                                                                             | Provided by                                    | Country          | Notes         |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
+| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion) | [Private.coffee](https://private.coffee) | Austria 🇦🇹 🇪🇺 | Main instance |
+| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |  |
+<!-- END_INSTANCE_LIST -->
 
 ### Adding Your Instance
 
