@@ -85,6 +85,7 @@ Structables supports the use of the following environment variables for configur
 - `STRUCTABLES_UNSAFE`: If set, allow embedding untrusted iframes (if unset, display a warning and allow loading the content manually)
 - `STRUCTABLES_PRIVACY_FILE`: The path to a text file or Markdown file (with .md suffix) to use for the Privacy Policy page (if unset, try `privacy.txt` or `privacy.md` in the working directory, or fall back to a generic message)
 - `STRUCTABLES_DEBUG`: If set, log additional debug information to stdout
+- `STRUCTABLES_THEME`: Allows selecting a theme for the frontend. Currently, only `dark` and `light` are supported. If not set, it will be automatically detected based on the user's system settings, and a toggle will be provided in the header.
 
 ## License
 

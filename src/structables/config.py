@@ -7,6 +7,7 @@ class Config:
     INVIDIOUS = os.environ.get("STRUCTABLES_INVIDIOUS")
     UNSAFE = os.environ.get("STRUCTABLES_UNSAFE", False)
     PRIVACY_FILE = os.environ.get("STRUCTABLES_PRIVACY_FILE")
+    THEME = os.environ.get("STRUCTABLES_THEME", "auto")
 
     @staticmethod
     def init_app(app):

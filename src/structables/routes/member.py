@@ -5,7 +5,9 @@ from urllib.parse import quote
 from ..utils.helpers import proxy, member_header
 from bs4 import BeautifulSoup
 from urllib.request import Request
+import logging
 
+logger = logging.getLogger(__name__)
 
 def init_member_routes(app):
     """This function initializes all the routes related to Instructables member profiles.
@@ -24,20 +26,23 @@ def init_member_routes(app):
         Returns:
             Response: The rendered HTML page.
         """
-
+        logger.debug(f"Fetching instructables for member: {member}")
         member = quote(member)
 
         try:
+            logger.debug(f"Making request to https://www.instructables.com/member/{member}/instructables/")
             data = urlopen(
                 f"https://www.instructables.com/member/{member}/instructables/"
             )
         except HTTPError as e:
+            logger.error(f"HTTP error fetching member instructables: {e.code}")
             abort(e.code)
 
         soup = BeautifulSoup(data.read().decode(), "html.parser")
 
         header = soup.select(".profile-header.profile-header-social")[0]
         header_content = member_header(header)
+        logger.debug(f"Parsed member header for {header_content['title']}")
 
         ibles = soup.select("ul.ible-list-items")[0]
         ible_list = []
@@ -63,6 +68,8 @@ def init_member_routes(app):
                     "favorites": favorites,
                 }
             )
+        
+        logger.debug(f"Found {len(ible_list)} instructables for member {member}")
 
         return render_template(
             "member-instructables.html",
@@ -81,19 +88,22 @@ def init_member_routes(app):
         Returns:
             Response: The rendered HTML page.
         """
-
+        logger.debug(f"Fetching profile for member: {member}")
         member = quote(member)
 
         request = Request(f"https://www.instructables.com/member/{member}/")
 
         try:
+            logger.debug(f"Making request to https://www.instructables.com/member/{member}/")
             data = urlopen(request)
         except HTTPError as e:
+            logger.error(f"HTTP error fetching member profile: {e.code}")
             abort(e.code)
 
         soup = BeautifulSoup(data.read().decode(), "html.parser")
 
         header_content = member_header(soup)
+        logger.debug(f"Parsed member header for {header_content['title']}")
 
         body = soup.select("div.member-profile-body")[0]
 
@@ -105,12 +115,16 @@ def init_member_routes(app):
         if ible_list != []:
             ible_list = ible_list[0]
             ible_list_title = ible_list.select("h2.module-title")[0].text
+            logger.debug(f"Found promoted content: {ible_list_title}")
+            
             for ible in ible_list.select("ul.promoted-items li"):
                 ible_title = ible.get("data-title")
                 ible_link = ible.select("div.image-wrapper")[0].a.get("href")
                 ible_img = proxy(ible.select("div.image-wrapper a img")[0].get("src"))
 
                 ibles.append({"title": ible_title, "link": ible_link, "img": ible_img})
+            
+            logger.debug(f"Found {len(ibles)} promoted instructables")
 
         ach_list = body.select(
             "div.two-col-section div.right-col-section.centered-sidebar div.boxed-content.about-me"
@@ -122,6 +136,8 @@ def init_member_routes(app):
         if len(ach_list) > 1:
             ach_list = ach_list[1]
             ach_list_title = ach_list.select("h2.module-title")[0].text
+            logger.debug(f"Found achievements section: {ach_list_title}")
+            
             for ach in ach_list.select(
                 "div.achievements-section.main-achievements.contest-achievements div.achievement-item:not(.two-column-filler)"
             ):
@@ -134,7 +150,10 @@ def init_member_routes(app):
                     )[0].text
                     achs.append([ach_title, ach_desc])
                 except IndexError:
+                    logger.warning("Failed to parse an achievement item")
                     pass
+            
+            logger.debug(f"Found {len(achs)} achievements")
 
         return render_template(
             "member.html",

@@ -3,17 +3,23 @@
 from flask import Flask
 import threading
 import time
+import logging
 
 from .config import Config
 from .routes import init_routes
 from .utils.data import update_data
 from .utils.helpers import get_typesense_api_key
 
+# Configure logging
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config.from_object(Config)
 app.typesense_api_key = get_typesense_api_key()
 
+logger.debug("Initializing routes")
 init_routes(app)
+logger.debug("Performing initial data update")
 update_data(app)
 
 
@@ -25,13 +31,32 @@ def background_update_data(app):
     Args:
         app (Flask): The Flask app instance.
     """
+    logger.debug("Starting background update thread")
     while True:
+        logger.debug("Running scheduled data update")
         update_data(app)
+        logger.debug("Data update complete, sleeping for 5 minutes")
         time.sleep(300)
 
 
 def main():
+    if app.config["DEBUG"]:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        )
+    else:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        )
+
+    logger.debug("Starting background update thread")
     threading.Thread(target=background_update_data, args=(app,), daemon=True).start()
+
+    logger.info(
+        f"Starting Structables on {app.config['LISTEN_HOST']}:{app.config['PORT']}"
+    )
     app.run(
         port=app.config["PORT"],
         host=app.config["LISTEN_HOST"],

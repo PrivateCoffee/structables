@@ -1,12 +1,23 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <title>iframe content</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>External Content Blocked</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/iframe.css') }}">
 </head>
 <body>
-    <h1>Blocked iframe</h1>
-    <p>This page contains content from outside Instructables.com. This was blocked for your safety.</p>
-    <p>It tries to load the following URL:</p>
-    <p><a href="{{ url | safe }}" target="_self">{{ url | safe }}</a></p>
-    <p>Click <a href="{{ url | safe }}" target="_self">here</a> to load the content.</p>
+  <div class="warning-box">
+    <div class="warning-icon">⚠️</div>
+    <h1>External Content Blocked</h1>
+    <p>This page contains content from an external website that was blocked for your safety.</p>
+    <p>The content is trying to load from:</p>
+    <div class="url-display">{{ url | safe }}</div>
+    <p>If you trust this source and want to proceed, you can:</p>
+    <a href="{{ url | safe }}" target="_self" class="action-button">Load External Content</a>
+  </div>
+  <div class="footer">
+    <p>Structables blocks external content by default to protect your privacy and security.</p>
+  </div>
 </body>
 </html>

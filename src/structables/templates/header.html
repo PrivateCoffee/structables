@@ -20,6 +20,16 @@
         <li class="nav-item">
           <a class="nav-link" href="/sitemap/">Sitemap</a>
         </li>
+        {% if config["THEME"] == "auto" %}
+        <li class="nav-item theme-switch-wrapper">
+          <span class="theme-icon sun-icon"></span>
+          <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider"></div>
+          </label>
+          <span class="theme-icon moon-icon"></span>
+        </li>
+        {% endif %}
       </ul>
       <form class="search-form" action="/search" method="post">
         <input class="search-input"

@@ -4,6 +4,9 @@ from urllib.error import HTTPError
 from ..utils.helpers import proxy
 from bs4 import BeautifulSoup
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def init_contest_routes(app):
@@ -14,18 +17,27 @@ def init_contest_routes(app):
         page = request.args.get("page", default=1, type=int)
         offset = (page - 1) * limit
 
+        logger.debug(f"Fetching contest archive page {page} with limit {limit}")
+
         try:
             # Fetch data using urlopen
             url = f"https://www.instructables.com/json-api/getClosedContests?limit={limit}&offset={offset}"
+            logger.debug(f"Making request to {url}")
             response = urlopen(url)
             data = json.loads(response.read().decode())
+            logger.debug(
+                f"Received contest archive data with {len(data.get('contests', []))} contests"
+            )
         except HTTPError as e:
+            logger.error(f"HTTP error fetching contest archive: {e.code}")
             abort(e.code)
         except Exception as e:
+            logger.error(f"Error fetching contest archive: {str(e)}")
             abort(500)  # Handle other exceptions like JSON decode errors
 
         contests = data.get("contests", [])
         full_list_size = data.get("fullListSize", 0)
+        logger.debug(f"Total contests in archive: {full_list_size}")
 
         contest_list = []
         for contest in contests:
@@ -42,6 +54,7 @@ def init_contest_routes(app):
 
         # Calculate total pages
         total_pages = (full_list_size + limit - 1) // limit
+        logger.debug(f"Pagination: page {page}/{total_pages}")
 
         # Create pagination
         pagination = {
@@ -66,16 +79,22 @@ def init_contest_routes(app):
         page, per_page = 1, 100
         all_entries = []
 
+        logger.debug(f"Fetching entries for contest: {contest}")
+
         while True:
             try:
                 url = f"{base_url}?q=*&filter_by=contestPath:{contest}&sort_by=contestEntryDate:desc&per_page={per_page}&page={page}"
+                logger.debug(f"Making request to {url} (page {page})")
                 request = Request(url, headers=headers)
                 response = urlopen(request)
                 data = json.loads(response.read().decode())
             except HTTPError as e:
+                logger.error(f"HTTP error fetching contest entries: {e.code}")
                 abort(e.code)
 
             hits = data.get("hits", [])
+            logger.debug(f"Received {len(hits)} entries on page {page}")
+
             if not hits:
                 break
 
@@ -84,10 +103,13 @@ def init_contest_routes(app):
                 break
             page += 1
 
+        logger.debug(f"Total entries fetched: {len(all_entries)}")
         return all_entries
 
     @app.route("/contest/<contest>/")
     def route_contest(contest):
+        logger.debug(f"Fetching contest page for: {contest}")
+
         try:
             data = urlopen(f"https://www.instructables.com/contest/{contest}/")
             html = data.read().decode()
@@ -95,13 +117,19 @@ def init_contest_routes(app):
 
             title_tag = soup.find("h1")
             title = title_tag.get_text() if title_tag else "Contest"
+            logger.debug(f"Contest title: {title}")
 
             img_tag = soup.find("img", alt=lambda x: x and "Banner" in x)
             img = img_tag.get("src") if img_tag else "default.jpg"
 
-            entry_count = len(get_entries(contest))
+            logger.debug(f"Fetching entries for contest: {contest}")
+            entries = get_entries(contest)
+            entry_count = len(entries)
+            logger.debug(f"Found {entry_count} entries")
+
             prizes_items = soup.select("article")
             prizes = len(prizes_items) if prizes_items else 0
+            logger.debug(f"Found {prizes} prizes")
 
             overview_section = soup.find("section", id="overview")
             info = (
@@ -111,10 +139,10 @@ def init_contest_routes(app):
             )
 
         except HTTPError as e:
+            logger.error(f"HTTP error fetching contest page: {e.code}")
             abort(e.code)
 
         entry_list = []
-        entries = get_entries(contest)
         for entry in entries:
             doc = entry["document"]
             entry_details = {
@@ -141,18 +169,25 @@ def init_contest_routes(app):
 
     @app.route("/contest/")
     def route_contests():
+        logger.debug("Fetching current contests")
+
         try:
             # Fetch current contests from the JSON API
             response = urlopen(
                 "https://www.instructables.com/json-api/getCurrentContests?limit=50&offset=0"
             )
             data = json.loads(response.read().decode())
+            logger.debug(f"Received current contests data")
         except HTTPError as e:
+            logger.error(f"HTTP error fetching current contests: {e.code}")
             abort(e.code)
         except Exception as e:
+            logger.error(f"Error fetching current contests: {str(e)}")
             abort(500)  # Handle other exceptions such as JSON decode errors
 
         contests = data.get("contests", [])
+        logger.debug(f"Found {len(contests)} current contests")
+
         contest_list = []
         for contest in contests:
             contest_details = {
