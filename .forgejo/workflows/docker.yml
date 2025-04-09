@@ -12,10 +12,6 @@ jobs:
     container:
       image: catthehacker/ubuntu:act-latest
     steps:
-      - name: Install dependencies
-        run: |
-          apt update
-          apt install -y docker.io
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
