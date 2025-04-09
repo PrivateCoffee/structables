@@ -58,6 +58,8 @@ Of course, you can also join our [Matrix room](https://matrix.pcof.fi/#/#structa
 
 ### Production: Docker
 
+**Note:** The Docker image is now hosted on [git.private.coffee](https://git.private.coffee/privatecoffee/structables/packages) instead of Docker Hub. Please use the new image name `git.private.coffee/privatecoffee/structables` instead of `privatecoffee/structables` to continue receiving updates.
+
 1. Copy `.env.example` to `.env` and adjust the settings as necessary
 2. Copy `docker-compose-example.yml` to `docker-compose.yml` and adjust it as necessary, for example modifying resource limits or changing the port/host configuration
 3. Build and run the Docker container:
