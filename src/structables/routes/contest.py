@@ -74,8 +74,8 @@ def init_contest_routes(app):
         )
 
     def get_entries(contest):
-        base_url = f"https://www.instructables.com/api_proxy/search/collections/projects/documents/search"
-        headers = {"x-typesense-api-key": app.typesense_api_key}
+        base_url = "https://www.instructables.com/api_proxy/search/collections/projects/documents/search"
+        headers = {"x-typesense-api-key": app.config["TYPESENSE_API_KEY"]}
         page, per_page = 1, 100
         all_entries = []
 
@@ -177,7 +177,7 @@ def init_contest_routes(app):
                 "https://www.instructables.com/json-api/getCurrentContests?limit=50&offset=0"
             )
             data = json.loads(response.read().decode())
-            logger.debug(f"Received current contests data")
+            logger.debug("Received current contests data")
         except HTTPError as e:
             logger.error(f"HTTP error fetching current contests: {e.code}")
             abort(e.code)

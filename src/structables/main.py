@@ -8,20 +8,18 @@ import logging
 from .config import Config
 from .routes import init_routes
 from .utils.data import update_data
-from .utils.helpers import get_typesense_api_key
+from .routes.proxy import start_cache_cleanup_thread
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config.from_object(Config)
-app.typesense_api_key = get_typesense_api_key()
 
 logger.debug("Initializing routes")
 init_routes(app)
 logger.debug("Performing initial data update")
 update_data(app)
-
 
 def background_update_data(app):
     """Runs the update_data function every 5 minutes.
@@ -38,31 +36,30 @@ def background_update_data(app):
         logger.debug("Data update complete, sleeping for 5 minutes")
         time.sleep(300)
 
-
 def main():
     if app.config["DEBUG"]:
         logging.basicConfig(
             level=logging.DEBUG,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
     else:
         logging.basicConfig(
             level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
-
+    
     logger.debug("Starting background update thread")
     threading.Thread(target=background_update_data, args=(app,), daemon=True).start()
-
-    logger.info(
-        f"Starting Structables on {app.config['LISTEN_HOST']}:{app.config['PORT']}"
-    )
+    
+    # Start the cache cleanup thread
+    start_cache_cleanup_thread(app)
+    
+    logger.info(f"Starting Structables on {app.config['LISTEN_HOST']}:{app.config['PORT']}")
     app.run(
         port=app.config["PORT"],
         host=app.config["LISTEN_HOST"],
         debug=app.config["DEBUG"],
     )
-
 
 if __name__ == "__main__":
     main()

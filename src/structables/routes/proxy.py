@@ -4,15 +4,215 @@ from urllib.parse import unquote
 from urllib.error import HTTPError
 from urllib.request import urlopen
 import logging
+import os
+import hashlib
+import time
+import threading
+import shutil
 
 logger = logging.getLogger(__name__)
 
+# Cache cleanup thread reference
+cache_cleanup_thread = None
+
+
+def get_cache_path(app, url):
+    """Generate a cache file path for a URL.
+
+    Args:
+        app: The Flask app instance.
+        url (str): The URL to cache.
+
+    Returns:
+        str: The path to the cache file.
+    """
+    # Create a hash of the URL to use as the filename
+    url_hash = hashlib.sha256(url.encode()).hexdigest()
+    cache_dir = app.config["CACHE_DIR"]
+    return os.path.join(cache_dir, url_hash)
+
+
+def is_cached(app, url):
+    """Check if a URL is cached and not expired.
+
+    Args:
+        app: The Flask app instance.
+        url (str): The URL to check.
+
+    Returns:
+        bool: True if the URL is cached and not expired, False otherwise.
+    """
+    # If caching is disabled, always return False
+    if not app.config["CACHE_ENABLED"]:
+        return False
+
+    cache_path = get_cache_path(app, url)
+
+    # Check if the file exists
+    if not os.path.exists(cache_path):
+        return False
+
+    # Check if the cache has expired
+    cache_time = os.path.getmtime(cache_path)
+    max_age = app.config["CACHE_MAX_AGE"]
+    if time.time() - cache_time > max_age:
+        # Cache has expired, remove it
+        try:
+            os.remove(cache_path)
+            # Also remove metadata file if it exists
+            meta_path = cache_path + ".meta"
+            if os.path.exists(meta_path):
+                os.remove(meta_path)
+            return False
+        except OSError:
+            logger.warning(f"Failed to remove expired cache file: {cache_path}")
+            return False
+
+    # Cache exists and is not expired
+    return True
+
+
+def get_content_type(cache_path):
+    """Get the content type from a cache file.
+
+    Args:
+        cache_path (str): The path to the cache file.
+
+    Returns:
+        str: The content type, or 'application/octet-stream' if not found.
+    """
+    meta_path = cache_path + ".meta"
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r") as f:
+                return f.read().strip()
+        except OSError:
+            logger.warning(
+                f"Failed to read content type from cache metadata: {meta_path}"
+            )
+
+    return "application/octet-stream"
+
+
+def cache_cleanup(app):
+    """Clean up the cache directory to stay within size limits.
+
+    This function removes the oldest files first until the cache size
+    is below the maximum size.
+
+    Args:
+        app: The Flask app instance.
+    """
+    # If caching is disabled, don't do anything
+    if not app.config["CACHE_ENABLED"]:
+        return
+
+    logger.debug("Starting cache cleanup")
+
+    try:
+        cache_dir = app.config["CACHE_DIR"]
+        max_size = app.config["CACHE_MAX_SIZE"]
+
+        # Get all cache files with their modification times
+        cache_files = []
+        total_size = 0
+
+        for filename in os.listdir(cache_dir):
+            file_path = os.path.join(cache_dir, filename)
+            if os.path.isfile(file_path):
+                file_size = os.path.getsize(file_path)
+                file_time = os.path.getmtime(file_path)
+                total_size += file_size
+                cache_files.append((file_path, file_time, file_size))
+
+        logger.debug(f"Current cache size: {total_size / (1024 * 1024):.2f} MB")
+
+        # If we're over the size limit, remove oldest files first
+        if total_size > max_size:
+            logger.debug("Cache size exceeds limit, cleaning up")
+            # Sort by modification time (oldest first)
+            cache_files.sort(key=lambda x: x[1])
+
+            # Remove files until we're under the limit
+            for file_path, _, file_size in cache_files:
+                if total_size <= max_size:
+                    break
+
+                try:
+                    os.remove(file_path)
+                    # Also remove metadata file if it exists
+                    meta_path = file_path + ".meta"
+                    if os.path.exists(meta_path):
+                        os.remove(meta_path)
+
+                    total_size -= file_size
+                    logger.debug(f"Removed cache file: {file_path}")
+                except OSError:
+                    logger.warning(f"Failed to remove cache file: {file_path}")
+
+        logger.debug(
+            f"Cache cleanup complete. New size: {total_size / (1024 * 1024):.2f} MB"
+        )
+
+    except Exception as e:
+        logger.error(f"Error during cache cleanup: {str(e)}")
+
+
+def start_cache_cleanup_thread(app):
+    """Start a background thread to periodically clean up the cache.
+
+    Args:
+        app: The Flask app instance.
+    """
+    global cache_cleanup_thread
+
+    # If thread is already running, don't start another one
+    if cache_cleanup_thread is not None and cache_cleanup_thread.is_alive():
+        return
+
+    # If caching is disabled, don't start the thread
+    if not app.config["CACHE_ENABLED"]:
+        logger.debug("Caching is disabled, not starting cache cleanup thread")
+        return
+
+    def cleanup_worker():
+        while True:
+            try:
+                with app.app_context():
+                    cache_cleanup(app)
+                cleanup_interval = app.config["CACHE_CLEANUP_INTERVAL"]
+                time.sleep(cleanup_interval)
+            except Exception as e:
+                logger.error(f"Error in cache cleanup worker: {str(e)}")
+                # Sleep a bit to avoid tight loop in case of recurring errors
+                time.sleep(60)
+
+    cache_cleanup_thread = threading.Thread(target=cleanup_worker, daemon=True)
+    cache_cleanup_thread.start()
+    logger.debug("Started cache cleanup background thread")
+
+
 def init_proxy_routes(app):
+    # Create cache directory if it doesn't exist and caching is enabled
+    if app.config["CACHE_ENABLED"]:
+        cache_dir = app.config["CACHE_DIR"]
+        os.makedirs(cache_dir, exist_ok=True)
+        logger.debug(f"Cache directory: {cache_dir}")
+        logger.debug(f"Cache max age: {app.config['CACHE_MAX_AGE']} seconds")
+        logger.debug(
+            f"Cache max size: {app.config['CACHE_MAX_SIZE'] / (1024 * 1024):.2f} MB"
+        )
+        logger.debug(
+            f"Cache cleanup interval: {app.config['CACHE_CLEANUP_INTERVAL']} seconds"
+        )
+    else:
+        logger.debug("Caching is disabled")
+
     @app.route("/proxy/")
     def route_proxy():
         url = request.args.get("url")
         filename = request.args.get("filename")
-        
+
         logger.debug(f"Proxy request for URL: {url}, filename: {filename}")
 
         if url is not None:
@@ -20,27 +220,102 @@ def init_proxy_routes(app):
                 "https://content.instructables.com/"
             ):
                 logger.debug(f"Valid proxy URL: {url}")
+                unquoted_url = unquote(url)
 
-                def generate():
-                    # Subfunction to allow streaming the data instead of
-                    # downloading all of it at once
-                    try:
-                        logger.debug(f"Opening connection to {url}")
-                        with urlopen(unquote(url)) as data:
-                            logger.debug("Connection established, streaming data")
+                # Check if the content is already cached
+                if is_cached(app, unquoted_url):
+                    logger.debug(f"Serving cached content for: {unquoted_url}")
+                    cache_path = get_cache_path(app, unquoted_url)
+                    content_type = get_content_type(cache_path)
+
+                    def generate_from_cache():
+                        with open(cache_path, "rb") as f:
                             while True:
-                                chunk = data.read(1024 * 1024)
+                                chunk = f.read(1024 * 1024)
                                 if not chunk:
                                     break
                                 yield chunk
-                            logger.debug("Finished streaming data")
+
+                    headers = dict()
+                    if filename is not None:
+                        headers["Content-Disposition"] = (
+                            f'attachment; filename="{filename}"'
+                        )
+
+                    return Response(
+                        generate_from_cache(),
+                        content_type=content_type,
+                        headers=headers,
+                    )
+
+                # Content is not cached or caching is disabled, fetch it
+                def generate_and_maybe_cache():
+                    try:
+                        logger.debug(f"Opening connection to {unquoted_url}")
+                        with urlopen(unquoted_url) as data:
+                            logger.debug("Connection established, streaming data")
+
+                            # If caching is enabled, cache the content
+                            if app.config["CACHE_ENABLED"]:
+                                cache_path = get_cache_path(app, unquoted_url)
+                                temp_path = cache_path + ".tmp"
+                                with open(temp_path, "wb") as f:
+                                    while True:
+                                        chunk = data.read(1024 * 1024)
+                                        if not chunk:
+                                            break
+                                        f.write(chunk)
+                                        yield chunk
+
+                                # Save the content type
+                                try:
+                                    content_type = data.headers["content-type"]
+                                    with open(cache_path + ".meta", "w") as f:
+                                        f.write(content_type)
+                                except (KeyError, OSError):
+                                    logger.warning(
+                                        f"Failed to save content type for: {unquoted_url}"
+                                    )
+
+                                # Rename the temporary file to the final cache file
+                                try:
+                                    os.rename(temp_path, cache_path)
+                                    logger.debug(
+                                        f"Successfully cached content for: {unquoted_url}"
+                                    )
+                                except OSError:
+                                    logger.warning(
+                                        f"Failed to rename temporary cache file: {temp_path}"
+                                    )
+                                    # Try to copy and delete instead
+                                    try:
+                                        shutil.copy2(temp_path, cache_path)
+                                        os.remove(temp_path)
+                                        logger.debug(
+                                            f"Successfully cached content using copy method: {unquoted_url}"
+                                        )
+                                    except OSError:
+                                        logger.error(
+                                            f"Failed to cache content: {unquoted_url}"
+                                        )
+                            else:
+                                # If caching is disabled, just stream the data
+                                while True:
+                                    chunk = data.read(1024 * 1024)
+                                    if not chunk:
+                                        break
+                                    yield chunk
+
                     except HTTPError as e:
                         logger.error(f"HTTP error during streaming: {e.code}")
                         abort(e.code)
+                    except Exception as e:
+                        logger.error(f"Error fetching content: {str(e)}")
+                        abort(500)
 
                 try:
-                    logger.debug(f"Getting content type for {url}")
-                    with urlopen(unquote(url)) as data:
+                    logger.debug(f"Getting content type for {unquoted_url}")
+                    with urlopen(unquoted_url) as data:
                         content_type = data.headers["content-type"]
                         logger.debug(f"Content type: {content_type}")
                 except HTTPError as e:
@@ -51,14 +326,17 @@ def init_proxy_routes(app):
                     raise InternalServerError()
 
                 headers = dict()
-
                 if filename is not None:
                     headers["Content-Disposition"] = (
                         f'attachment; filename="{filename}"'
                     )
                     logger.debug(f"Added Content-Disposition header for {filename}")
 
-                return Response(generate(), content_type=content_type, headers=headers)
+                return Response(
+                    generate_and_maybe_cache(),
+                    content_type=content_type,
+                    headers=headers,
+                )
             else:
                 logger.warning(f"Invalid proxy URL: {url}")
                 raise BadRequest()
@@ -70,9 +348,9 @@ def init_proxy_routes(app):
     def route_iframe():
         url = request.args.get("url")
         url = unquote(url)
-        
+
         logger.debug(f"iframe request for URL: {url}")
-        
+
         if url is not None:
             return render_template("iframe.html", url=url)
         else:

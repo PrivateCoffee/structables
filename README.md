@@ -14,20 +14,24 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 ## Instances
 
 <!-- START_INSTANCE_LIST type:eq=clearnet -->
+
 | URL                                                                    | Provided by                                    | Country          | Notes         |
 | ---------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
-| [structables.private.coffee](https://structables.private.coffee) | [Private.coffee](https://private.coffee) | Austria 🇦🇹 🇪🇺 | Main instance |
-| [structables.bloat.cat](https://structables.bloat.cat) | [Bloat.cat](https://bloat.cat) | Germany 🇩🇪 🇪🇺 |  |
-| [structables.darkness.services](https://structables.darkness.services) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |  |
+| [structables.private.coffee](https://structables.private.coffee)       | [Private.coffee](https://private.coffee)       | Austria 🇦🇹 🇪🇺    | Main instance |
+| [structables.bloat.cat](https://structables.bloat.cat)                 | [Bloat.cat](https://bloat.cat)                 | Germany 🇩🇪 🇪🇺    |               |
+| [structables.darkness.services](https://structables.darkness.services) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |               |
+
 <!-- END_INSTANCE_LIST -->
 
 ### Tor Hidden Services
 
 <!-- START_INSTANCE_LIST type:eq=onion -->
+
 | URL                                                                                                                                                             | Provided by                                    | Country          | Notes         |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
-| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion) | [Private.coffee](https://private.coffee) | Austria 🇦🇹 🇪🇺 | Main instance |
-| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |  |
+| [structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion](http://structables.coffee2m3bjsrrqqycx6ghkxrnejl2q6nl7pjw2j4clchjj6uk5zozad.onion) | [Private.coffee](https://private.coffee)       | Austria 🇦🇹 🇪🇺    | Main instance |
+| [structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion](http://structables.darknessrdor43qkl2ngwitj72zdavfz2cead4t5ed72bybgauww5lyd.onion) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |               |
+
 <!-- END_INSTANCE_LIST -->
 
 ### Adding Your Instance
@@ -86,6 +90,11 @@ Structables supports the use of the following environment variables for configur
 - `STRUCTABLES_PRIVACY_FILE`: The path to a text file or Markdown file (with .md suffix) to use for the Privacy Policy page (if unset, try `privacy.txt` or `privacy.md` in the working directory, or fall back to a generic message)
 - `STRUCTABLES_DEBUG`: If set, log additional debug information to stdout
 - `STRUCTABLES_THEME`: Allows selecting a theme for the frontend. Currently, only `dark` and `light` are supported. If not set, it will be automatically detected based on the user's system settings, and a toggle will be provided in the header.
+- `STRUCTABLES_CACHE_ENABLED`: Whether to enable caching of proxied content (default: true). Set to "false" or "0" to disable caching.
+- `STRUCTABLES_CACHE_DIR`: The directory to use for caching proxied content (default: `structables_cache` within the temporary directory as returned by `tempfile.gettempdir()`)
+- `STRUCTABLES_CACHE_MAX_AGE`: The maximum age of cached content in seconds before it's considered stale (default: 604800 seconds, or 1 week)
+- `STRUCTABLES_CACHE_MAX_SIZE`: The maximum size of the cache directory in bytes (default: 1073741824 bytes, or 1GB)
+- `STRUCTABLES_CACHE_CLEANUP_INTERVAL`: How often to run the cache cleanup process in seconds (default: 3600 seconds, or 1 hour)
 
 ## License
 

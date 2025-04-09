@@ -134,7 +134,7 @@ def init_main_routes(app):
                 f"https://www.instructables.com/json-api/showInstructableModel?urlString={article}"
             )
             data = json.loads(data.read().decode())
-            logger.debug(f"Successfully fetched article data")
+            logger.debug("Successfully fetched article data")
         except HTTPError as e:
             logger.error(f"HTTP error fetching article: {e.code}")
             abort(e.code)

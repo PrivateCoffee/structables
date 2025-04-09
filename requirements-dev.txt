@@ -2,3 +2,5 @@ ruff
 black
 isort
 mypy
+types-beautifulsoup4
+types-colorama

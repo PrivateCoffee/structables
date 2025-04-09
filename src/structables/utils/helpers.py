@@ -519,7 +519,7 @@ def projects_search(
 
     logger.debug(f"Searching projects: query='{query}', filter='{filter_by}', page={page}, per_page={per_page}")
 
-    projects_headers = {"x-typesense-api-key": app.typesense_api_key}
+    projects_headers = {"x-typesense-api-key": app.config["TYPESENSE_API_KEY"]}
 
     request_args = {
         "q": query,
