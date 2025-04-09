@@ -18,7 +18,8 @@ jobs:
           apt install -y docker.io
       - name: Ensure docker is running
         run: |
-          systemctl start docker
+          service docker start
+          docker info
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
