@@ -9,7 +9,7 @@ jobs:
   docker:
     name: Docker Build and Push to Docker Hub
     container:
-      image: node:20-bookworm
+      image: node:22-bookworm
     steps:
       - name: Install dependencies
         run: |
@@ -25,7 +25,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push to Docker Hub
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           push: true
           tags: |
