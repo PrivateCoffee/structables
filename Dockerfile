@@ -12,10 +12,8 @@ RUN $APP_ENV/bin/pip install --no-cache-dir pip && \
   $APP_ENV/bin/pip install /app && \
   adduser -S -D -H structables
 
-COPY entrypoint.sh /entrypoint.sh
-
 EXPOSE 8002
 
 USER structables
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]

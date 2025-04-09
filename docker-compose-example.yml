@@ -5,12 +5,13 @@ services:
     image: git.private.coffee/privatecoffee/structables:latest
     ports:
       - "127.0.0.1:8002:8002"
+    volumes:
+      - ./cache:/app/structables_cache
     env_file: .env
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    read_only: true
     deploy:
       resources:
         limits:

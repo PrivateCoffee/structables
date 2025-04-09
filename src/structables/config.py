@@ -1,7 +1,12 @@
 import os
 import tempfile
+import logging
+
+from pathlib import Path
 
 from .utils.helpers import get_typesense_api_key
+
+logger = logging.getLogger(__name__)
 
 
 class Config:
@@ -24,10 +29,20 @@ class Config:
     )
     CACHE_DIR = os.environ.get("STRUCTABLES_CACHE_DIR")
 
-    if CACHE_DIR is None:
-        CACHE_DIR = os.path.join(
-            tempfile.gettempdir(), "structables_cache"
-        )
+    if CACHE_ENABLED and CACHE_DIR is None:
+        try:
+            CACHE_DIR = Path(tempfile.gettempdir()) / "structables_cache"
+        except FileNotFoundError:
+            CACHE_DIR = Path(os.getcwd()) / "structables_cache"
+
+        try:
+            CACHE_DIR.mkdir(parents=True, exist_ok=True)
+            (CACHE_DIR / "test").write_text("test")
+            (CACHE_DIR / "test").unlink()
+        except Exception as e:
+            logger.error(f"Could not create or write to cache directory: {e} - disabling cache")
+            CACHE_ENABLED = False
+            CACHE_DIR = None
 
     CACHE_MAX_AGE = int(
         os.environ.get("STRUCTABLES_CACHE_MAX_AGE", 60 * 60 * 24 * 7)
