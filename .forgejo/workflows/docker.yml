@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "*"
+  workflow_dispatch:
 
 jobs:
   docker:
@@ -15,6 +16,9 @@ jobs:
         run: |
           apt update
           apt install -y docker.io
+      - name: Ensure docker is running
+        run: |
+          systemctl start docker
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
