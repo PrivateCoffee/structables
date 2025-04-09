@@ -11,15 +11,12 @@ jobs:
     name: Docker Build and Push to Docker Hub
     container:
       image: node:22-bookworm
+      options: --privileged -v /var/run/docker.sock:/var/run/docker.sock
     steps:
       - name: Install dependencies
         run: |
           apt update
           apt install -y docker.io
-      - name: Ensure docker is running
-        run: |
-          service docker start
-          docker info
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
