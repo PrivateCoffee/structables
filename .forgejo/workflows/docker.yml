@@ -9,12 +9,8 @@ on:
 jobs:
   docker:
     name: Docker Build and Push to Docker Hub
-    services:
-      docker:
-        image: docker:dind
-        options: --privileged
     container:
-      image: node:22-bookworm
+      image: catthehacker/ubuntu:act-latest
     steps:
       - name: Install dependencies
         run: |
