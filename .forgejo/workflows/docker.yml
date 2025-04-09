@@ -9,9 +9,12 @@ on:
 jobs:
   docker:
     name: Docker Build and Push to Docker Hub
+    services:
+      docker:
+        image: docker:dind
+        options: --privileged
     container:
       image: node:22-bookworm
-      options: --privileged -v /var/run/docker.sock:/var/run/docker.sock
     steps:
       - name: Install dependencies
         run: |
@@ -32,4 +35,4 @@ jobs:
           push: true
           tags: |
             privatecoffee/structables:latest
-            privatecoffee/structables:${{ env.GITHUB_REF_NAME }}
+            privatecoffee/structables:${{ github.ref_name }}
