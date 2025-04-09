@@ -181,7 +181,6 @@ def init_main_routes(app):
                 for step in data["steps"]:
                     step_title = step["title"]
                     logger.debug(f"Processing step: {step_title}")
-                    logger.debug(f"{step}")  # TODO: Remove this line
 
                     step_imgs = []
                     step_iframes = []
