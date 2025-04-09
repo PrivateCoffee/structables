@@ -1,56 +1,49 @@
-{% extends "base.html" %} {% block content %}
-<center>
-  <h1>{{ title }}</h1>
-  <span><a href="{{ path }}/">Featured</a></span>
-  <span><a href="{{ path }}/recent/">Recent</a></span>
-  <span><a href="{{ path }}/popular/">Popular</a></span>
-  <span><a href="{{ path }}/views/">Views</a></span>
-  <span><a href="{{ path }}/winners/">Winners</a></span>
-  <br />
-
-  <div class="container">
-    <div class="row">
+{% extends "base.html" %}
+{% block content %}
+  <div class="text-center">
+    <h1>{{ title }}</h1>
+    <div class="sort-links my-3">
+      <a href="{{ path }}/"
+         class="btn btn-outline-primary {% if 'recent' not in path and 'popular' not in path and 'views' not in path and 'winners' not in path %}active{% endif %}">Featured</a>
+      <a href="{{ path }}/recent/"
+         class="btn btn-outline-primary {% if 'recent' in path %}active{% endif %}">Recent</a>
+      <a href="{{ path }}/popular/"
+         class="btn btn-outline-primary {% if 'popular' in path %}active{% endif %}">Popular</a>
+      <a href="{{ path }}/views/"
+         class="btn btn-outline-primary {% if 'views' in path %}active{% endif %}">Views</a>
+      <a href="{{ path }}/winners/"
+         class="btn btn-outline-primary {% if 'winners' in path %}active{% endif %}">Winners</a>
+    </div>
+    <div class="card-grid">
       {% for ible in ibles %}
-      <div class="col-xs-12 col-sm-6 col-lg-4 mb-4">
-        <div class="card h-100 d-flex flex-column">
+        <div class="card">
           <a href="{{ ible.link }}">
-            <img
-              class="card-img-top"
-              src="{{ ible.img }}"
-              alt="{{ ible.alt }}"
-              style="max-width: 100%"
-            />
-            <div class="card-body">
-              <h5 class="card-title">{{ ible.title }}</h5>
-            </div>
+            <img class="card-img-top" src="{{ ible.img }}" alt="{{ ible.title }}">
           </a>
-          <div class="card-footer mt-auto">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{{ ible.link }}">{{ ible.title }}</a>
+            </h5>
             <p class="card-text">
               by <a href="{{ ible.author_link }}">{{ ible.author }}</a>
             </p>
             <p class="card-text">
               in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
             </p>
-            <p class="card-text">
-              {{ ible.favorites }} Favorites, {{ ible.views }} Views
-            </p>
+          </div>
+          <div class="card-footer">
+            <p class="card-text">{{ ible.favorites }} Favorites, {{ ible.views }} Views</p>
           </div>
         </div>
-      </div>
       {% endfor %}
-
-      <ul class="pagination">
-        {% for page in pagination %}
-        <li class="page-item">
-          <a
-            class="page-link {% if page.active %}active{% endif %} {% if page.disabled %}disabled{% endif %}"
-            href="{{ page.link }}"
-            >{{ page.text }}</a
-          >
-        </li>
-        {% endfor %}
-      </ul>
     </div>
+    <ul class="pagination">
+      {% for page in pagination %}
+        <li class="page-item">
+          <a class="page-link {% if page.active %}active{% endif %} {% if page.disabled %}disabled{% endif %}"
+             href="{{ page.link }}">{{ page.text }}</a>
+        </li>
+      {% endfor %}
+    </ul>
   </div>
-</center>
 {% endblock %}

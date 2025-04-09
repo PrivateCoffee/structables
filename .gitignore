@@ -6,6 +6,7 @@ privacy.md
 privacy.txt
 *.pyc
 venv/
+/output
 
 # Special rules needed for building the Docker image
 /dist/*

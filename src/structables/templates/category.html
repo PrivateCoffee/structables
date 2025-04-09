@@ -1,68 +1,35 @@
-{% extends "base.html" %} {% block content %}
-<div class="container">
-  <h1 class="text-center">{{ title }}</h1>
-  <div class="row">
-    {% for channel in channels %}
-    <div class="col-6 col-md-4 col-lg-3 text-center mb-3">
-      <a
-        href="/{{ channel }}"
-        class="btn btn-primary d-block position-relative"
-      >
-        {{ channel }}
-      </a>
+{% extends "base.html" %}
+{% block content %}
+  <div class="text-center">
+    <h1>{{ title }}</h1>
+    <div class="channel-grid my-4">
+      {% for channel in channels %}<a href="/{{ channel }}" class="btn btn-primary">{{ channel }}</a>{% endfor %}
     </div>
-    {% endfor %}
-  </div>
-
-  <h2 class="text-center">
-    <a href="{{ path }}projects/">Featured Projects</a>
-  </h2>
-  <div class="row">
-    {% for ible in ibles %}
-    <div class="col-xs-12 col-sm-6 col-lg-4 mb-4">
-      <div class="card h-100 d-flex flex-column">
-        <a href="{{ ible.link }}">
-          <img
-            class="card-img-top"
-            src="{{ ible.img }}"
-            alt="{{ ible.alt }}"
-            style="max-width: 100%"
-          />
+    <h2 class="my-4">
+      <a href="{{ path }}projects/">Featured Projects</a>
+    </h2>
+    <div class="card-grid">
+      {% for ible in ibles %}
+        <div class="card">
+          <a href="{{ ible.link }}">
+            <img class="card-img-top" src="{{ ible.img }}" alt="{{ ible.alt }}">
+          </a>
           <div class="card-body">
-            <h5 class="card-title">{{ ible.title }}</h5>
+            <h5 class="card-title">
+              <a href="{{ ible.link }}">{{ ible.title }}</a>
+            </h5>
+            <p class="card-text">
+              by <a href="{{ ible.author_link }}">{{ ible.author }}</a>
+            </p>
+            <p class="card-text">
+              in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
+            </p>
           </div>
-        </a>
-        <div class="card-footer mt-auto">
-          <p class="card-text">
-            by <a href="{{ ible.author_link }}">{{ ible.author }}</a>
-          </p>
-          <p class="card-text">
-            in <a href="{{ ible.channel_link }}">{{ ible.channel }}</a>
-          </p>
-          <p class="card-text">
-            {{ ible.favorites }} Favorites, {{ ible.views }} Views
-          </p>
+          <div class="card-footer">
+            <p class="card-text">{{ ible.favorites }} Favorites, {{ ible.views }} Views</p>
+          </div>
         </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-
-  <!-- Doesn't seem to be current
-  <h2 class="text-center"><a href="/contest/">Contests</a></h2>
-  <div class="row">
-    <div class="col">
-      {% for contest in contests %}
-      <a href="{{ contest.link }}">
-        <img
-          src="{{ contest.img }}"
-          alt="{{ contest.title }}"
-          class="img-fluid"
-        />
-      </a>
       {% endfor %}
     </div>
   </div>
-  -->
-</div>
 {% endblock %}
