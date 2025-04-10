@@ -50,5 +50,15 @@
             "url": "https://darkness.services"
         },
         "location": "US"
+    },
+    {
+        "name": "structables.franklyflawless.org",
+        "url": "https://structables.franklyflawless.org",
+        "type": "clearnet",
+        "provider": {
+            "name": "FranklyFlawless",
+            "url": "https://franklyflawless.org"
+        },
+        "location": "DE"
     }
 ]
