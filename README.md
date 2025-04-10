@@ -15,11 +15,12 @@ An open source alternative front-end to Instructables. This is a fork of <a href
 
 <!-- START_INSTANCE_LIST type:eq=clearnet -->
 
-| URL                                                                    | Provided by                                    | Country          | Notes         |
-| ---------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
-| [structables.private.coffee](https://structables.private.coffee)       | [Private.coffee](https://private.coffee)       | Austria 🇦🇹 🇪🇺    | Main instance |
-| [structables.bloat.cat](https://structables.bloat.cat)                 | [Bloat.cat](https://bloat.cat)                 | Germany 🇩🇪 🇪🇺    |               |
-| [structables.darkness.services](https://structables.darkness.services) | [Darkness.services](https://darkness.services) | United States 🇺🇸 |               |
+| URL                                                                        | Provided by                                    | Country          | Notes         |
+| -------------------------------------------------------------------------- | ---------------------------------------------- | ---------------- | ------------- |
+| [structables.private.coffee](https://structables.private.coffee)           | [Private.coffee](https://private.coffee)       | Austria 🇦🇹 🇪🇺    | Main instance |
+| [structables.bloat.cat](https://structables.bloat.cat)                     | [Bloat.cat](https://bloat.cat)                 | Germany 🇩🇪 🇪🇺    |               |
+| [structables.darkness.services](https://structables.darkness.services)     | [Darkness.services](https://darkness.services) | United States 🇺🇸 |               |
+| [structables.franklyflawless.org](https://structables.franklyflawless.org) | [FranklyFlawless](https://franklyflawless.org) | Germany 🇩🇪 🇪🇺    |               |
 
 <!-- END_INSTANCE_LIST -->
 
