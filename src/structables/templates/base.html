@@ -21,21 +21,41 @@
     {% include "footer.html" %}
     {% if config["THEME"] == "auto" %}
       <script>
+      // Create theme switcher elements
+      const themeSwitchWrapper = document.querySelector('.theme-switch-wrapper');
+      const sunIcon = document.createElement('span');
+      sunIcon.className = 'theme-icon sun-icon';
+      const moonIcon = document.createElement('span');
+      moonIcon.className = 'theme-icon moon-icon';
+      const themeSwitchLabel = document.createElement('label');
+      themeSwitchLabel.className = 'theme-switch';
+      const themeSwitchInput = document.createElement('input');
+      themeSwitchInput.type = 'checkbox';
+      themeSwitchInput.id = 'checkbox';
+      const sliderDiv = document.createElement('div');
+      sliderDiv.className = 'slider';
+
+      // Append elements to the theme switch wrapper
+      themeSwitchLabel.appendChild(themeSwitchInput);
+      themeSwitchLabel.appendChild(sliderDiv);
+      themeSwitchWrapper.appendChild(sunIcon);
+      themeSwitchWrapper.appendChild(themeSwitchLabel);
+      themeSwitchWrapper.appendChild(moonIcon);
+
       // Theme toggle functionality
-      const toggleSwitch = document.querySelector('#checkbox');
       const currentTheme = localStorage.getItem('theme');
       
       // Set theme based on saved preference or system preference
       if (currentTheme) {
         document.documentElement.setAttribute('data-theme', currentTheme);
         if (currentTheme === 'dark') {
-          toggleSwitch.checked = true;
+          themeSwitchInput.checked = true;
         }
       } else {
         // Check if user prefers dark mode
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           document.documentElement.setAttribute('data-theme', 'dark');
-          toggleSwitch.checked = true;
+          themeSwitchInput.checked = true;
           localStorage.setItem('theme', 'dark');
         }
       }
@@ -51,7 +71,7 @@
         }    
       }
       
-      toggleSwitch.addEventListener('change', switchTheme, false);
+      themeSwitchInput.addEventListener('change', switchTheme, false);
       </script>
     {% endif %}
   </body>
