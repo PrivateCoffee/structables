@@ -9,6 +9,7 @@ import hashlib
 import time
 import threading
 import shutil
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -214,6 +215,13 @@ def init_proxy_routes(app):
         filename = request.args.get("filename")
 
         logger.debug(f"Proxy request for URL: {url}, filename: {filename}")
+
+        # Check if the cache cleanup thread is running
+        if cache_cleanup_thread is None:
+            # Use every 100th request to trigger cleanup
+            if random.randint(1, 100) == 1:
+                logger.debug("Triggering cache cleanup")
+                cache_cleanup(app)
 
         if url is not None:
             if url.startswith("https://cdn.instructables.com/") or url.startswith(
