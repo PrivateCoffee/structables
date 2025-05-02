@@ -1,9 +1,13 @@
 from urllib.request import urlopen
 import logging
+import time
 from bs4 import BeautifulSoup
 from .helpers import proxy, projects_search
 
 logger = logging.getLogger(__name__)
+
+# Track the last data update time
+last_data_update = 0
 
 def update_data(app):
     """Update the application's cached data.
@@ -74,3 +78,22 @@ def update_data(app):
         logger.debug("Data update completed successfully")
     except Exception as e:
         logger.error(f"Error updating data: {str(e)}")
+
+
+def maybe_update_data(app):
+    """Updates the data if it's time to do so.
+
+    This replaces the background thread with a request-triggered update.
+
+    Args:
+        app (Flask): The Flask app instance.
+    """
+    global last_data_update
+    current_time = time.time()
+    
+    # Update every 5 minutes (300 seconds)
+    if current_time - last_data_update >= 300:
+        logger.debug("Running scheduled data update")
+        update_data(app)
+        last_data_update = current_time
+        logger.debug("Data update complete")

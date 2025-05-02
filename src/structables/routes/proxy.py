@@ -7,14 +7,12 @@ import logging
 import os
 import hashlib
 import time
-import threading
 import shutil
-import random
 
 logger = logging.getLogger(__name__)
 
-# Cache cleanup thread reference
-cache_cleanup_thread = None
+# Track last cache cleanup time
+last_cache_cleanup = 0
 
 
 def get_cache_path(app, url):
@@ -95,24 +93,35 @@ def get_content_type(cache_path):
     return "application/octet-stream"
 
 
-def cache_cleanup(app):
-    """Clean up the cache directory to stay within size limits.
-
-    This function removes the oldest files first until the cache size
-    is below the maximum size.
+def maybe_cleanup_cache(app):
+    """Clean up the cache directory if it's time to do so.
 
     Args:
         app: The Flask app instance.
     """
+    global last_cache_cleanup
+
     # If caching is disabled, don't do anything
     if not app.config["CACHE_ENABLED"]:
         return
 
+    # Check if it's time to run cleanup
+    current_time = time.time()
+    cleanup_interval = app.config["CACHE_CLEANUP_INTERVAL"]
+
+    if current_time - last_cache_cleanup < cleanup_interval:
+        logger.debug(
+            f"Cache cleanup skipped. Time since last cleanup: {current_time - last_cache_cleanup:.2f} seconds"
+        )
+        return
+
     logger.debug("Starting cache cleanup")
+    last_cache_cleanup = current_time
 
     try:
         cache_dir = app.config["CACHE_DIR"]
         max_size = app.config["CACHE_MAX_SIZE"]
+        max_age = app.config["CACHE_MAX_AGE"]
 
         # Get all cache files with their modification times
         cache_files = []
@@ -121,6 +130,10 @@ def cache_cleanup(app):
         for filename in os.listdir(cache_dir):
             file_path = os.path.join(cache_dir, filename)
             if os.path.isfile(file_path):
+                # Skip metadata files in the count
+                if file_path.endswith(".meta"):
+                    continue
+
                 file_size = os.path.getsize(file_path)
                 file_time = os.path.getmtime(file_path)
                 total_size += file_size
@@ -128,7 +141,34 @@ def cache_cleanup(app):
 
         logger.debug(f"Current cache size: {total_size / (1024 * 1024):.2f} MB")
 
-        # If we're over the size limit, remove oldest files first
+        # First, remove expired files
+        current_time = time.time()
+        expired_files = [
+            (path, mtime, size)
+            for path, mtime, size in cache_files
+            if current_time - mtime > max_age
+        ]
+
+        for file_path, _, file_size in expired_files:
+            try:
+                os.remove(file_path)
+                # Also remove metadata file if it exists
+                meta_path = file_path + ".meta"
+                if os.path.exists(meta_path):
+                    os.remove(meta_path)
+                total_size -= file_size
+                logger.debug(f"Removed expired cache file: {file_path}")
+            except OSError:
+                logger.warning(f"Failed to remove expired cache file: {file_path}")
+
+        # Remove files from the list that we've already deleted
+        cache_files = [
+            (path, mtime, size)
+            for path, mtime, size in cache_files
+            if (path, mtime, size) not in expired_files
+        ]
+
+        # If we're still over the size limit, remove oldest files first
         if total_size > max_size:
             logger.debug("Cache size exceeds limit, cleaning up")
             # Sort by modification time (oldest first)
@@ -147,7 +187,7 @@ def cache_cleanup(app):
                         os.remove(meta_path)
 
                     total_size -= file_size
-                    logger.debug(f"Removed cache file: {file_path}")
+                    logger.debug(f"Removed old cache file: {file_path}")
                 except OSError:
                     logger.warning(f"Failed to remove cache file: {file_path}")
 
@@ -157,40 +197,6 @@ def cache_cleanup(app):
 
     except Exception as e:
         logger.error(f"Error during cache cleanup: {str(e)}")
-
-
-def start_cache_cleanup_thread(app):
-    """Start a background thread to periodically clean up the cache.
-
-    Args:
-        app: The Flask app instance.
-    """
-    global cache_cleanup_thread
-
-    # If thread is already running, don't start another one
-    if cache_cleanup_thread is not None and cache_cleanup_thread.is_alive():
-        return
-
-    # If caching is disabled, don't start the thread
-    if not app.config["CACHE_ENABLED"]:
-        logger.debug("Caching is disabled, not starting cache cleanup thread")
-        return
-
-    def cleanup_worker():
-        while True:
-            try:
-                with app.app_context():
-                    cache_cleanup(app)
-                cleanup_interval = app.config["CACHE_CLEANUP_INTERVAL"]
-                time.sleep(cleanup_interval)
-            except Exception as e:
-                logger.error(f"Error in cache cleanup worker: {str(e)}")
-                # Sleep a bit to avoid tight loop in case of recurring errors
-                time.sleep(60)
-
-    cache_cleanup_thread = threading.Thread(target=cleanup_worker, daemon=True)
-    cache_cleanup_thread.start()
-    logger.debug("Started cache cleanup background thread")
 
 
 def init_proxy_routes(app):
@@ -216,12 +222,8 @@ def init_proxy_routes(app):
 
         logger.debug(f"Proxy request for URL: {url}, filename: {filename}")
 
-        # Check if the cache cleanup thread is running
-        if cache_cleanup_thread is None:
-            # Use every 100th request to trigger cleanup
-            if random.randint(1, 100) == 1:
-                logger.debug("Triggering cache cleanup")
-                cache_cleanup(app)
+        # Clean up the cache if needed
+        maybe_cleanup_cache(app)
 
         if url is not None:
             if url.startswith("https://cdn.instructables.com/") or url.startswith(

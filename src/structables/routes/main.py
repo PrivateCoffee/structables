@@ -6,13 +6,16 @@ from urllib.parse import quote
 from werkzeug.exceptions import InternalServerError
 from markdown2 import Markdown
 from traceback import print_exc
+
 import pathlib
 import json
 import logging
+import random
 
 from ..utils.data import update_data
 from ..utils.helpers import explore_lists, proxy
 from .category import project_list
+from ..utils.data import maybe_update_data
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +24,10 @@ def init_main_routes(app):
     @app.route("/")
     def route_explore():
         logger.debug("Rendering explore page")
+
+        # Occasionally trigger data update (every 20th request)
+        if random.randint(1, 20) == 1:
+            maybe_update_data(app)
 
         try:
             logger.debug("Fetching data from instructables.com")
