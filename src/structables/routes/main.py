@@ -10,7 +10,6 @@ from traceback import print_exc
 import pathlib
 import json
 import logging
-import random
 
 from ..utils.data import update_data
 from ..utils.helpers import explore_lists, proxy
@@ -24,10 +23,9 @@ def init_main_routes(app):
     @app.route("/")
     def route_explore():
         logger.debug("Rendering explore page")
-
-        # Occasionally trigger data update (every 20th request)
-        if random.randint(1, 20) == 1:
-            maybe_update_data(app)
+        
+        # Check if data needs to be updated
+        maybe_update_data(app)
 
         try:
             logger.debug("Fetching data from instructables.com")
