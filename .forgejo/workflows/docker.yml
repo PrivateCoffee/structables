@@ -9,6 +9,7 @@ on:
 jobs:
   docker:
     name: Docker Build and Push to Docker Hub
+    runs-on: docker-privileged
     container:
       image: catthehacker/ubuntu:act-latest
     steps:
