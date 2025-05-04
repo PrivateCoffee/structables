@@ -1,0 +1,15 @@
+.env
+.vscode
+__pycache__/
+docker-compose.yml
+privacy.md
+privacy.txt
+*.pyc
+venv/
+/output
+/cache/
+
+# Special rules needed for building the Docker image
+/dist/*
+!/dist/css/
+!/dist/css/*

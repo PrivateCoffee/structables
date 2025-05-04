@@ -23,7 +23,7 @@ def init_main_routes(app):
     @app.route("/")
     def route_explore():
         logger.debug("Rendering explore page")
-        
+
         # Check if data needs to be updated
         maybe_update_data(app)
 
@@ -135,8 +135,9 @@ def init_main_routes(app):
 
         try:
             logger.debug(f"Fetching article data from instructables.com for: {article}")
+            article_path = quote(article)
             data = urlopen(
-                f"https://www.instructables.com/json-api/showInstructableModel?urlString={article}"
+                f"https://www.instructables.com/json-api/showInstructableModel?urlString={article_path}"
             )
             data = json.loads(data.read().decode())
             logger.debug("Successfully fetched article data")
